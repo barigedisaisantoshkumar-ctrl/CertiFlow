@@ -1,7 +1,7 @@
 import { INITIAL_INTERNS } from './mockData';
 import { supabase, isSupabaseConfigured } from './supabase';
 
-const STORAGE_KEY = 'certiflow_interns';
+const STORAGE_KEY = 'certiflow_hps_interns_v3';
 
 const getStoredInterns = () => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -50,9 +50,10 @@ export const internService = {
   },
 
   async createIntern(internData) {
+    const nextCounter = getStoredInterns().length + 38;
     const newIntern = {
       id: 'int-' + Date.now(),
-      intern_code: `INT-${new Date().getFullYear()}-${String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}`,
+      intern_code: internData.intern_code || `HPS26${String(nextCounter).padStart(4, '0')}`,
       ...internData,
       created_at: new Date().toISOString(),
     };

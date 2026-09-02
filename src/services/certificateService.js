@@ -3,7 +3,7 @@ import { supabase, isSupabaseConfigured } from './supabase';
 import { generateCertificateId, generateVerificationToken, generateEmpId, calculateDuration } from '../utils/helpers';
 import { auditService } from './auditService';
 
-const STORAGE_KEY = 'certiflow_certificates';
+const STORAGE_KEY = 'certiflow_hps_certificates_v3';
 
 const getStoredCertificates = () => {
   const data = localStorage.getItem(STORAGE_KEY);
@@ -59,7 +59,7 @@ export const certificateService = {
   async generateCertificate(intern) {
     const existing = await this.getCertificateByInternId(intern.id);
     if (existing) {
-      throw new Error(`A valid certificate (${existing.certificate_number}) already exists for this intern.`);
+      throw new Error(`A valid HPS certificate (${existing.certificate_number}) already exists for this intern.`);
     }
 
     const list = getStoredCertificates();
@@ -105,38 +105,5 @@ export const certificateService = {
     saveStoredCertificates(updated);
     await auditService.logAction('CERTIFICATE_GENERATED', 'CERTIFICATE', certNumber, `Generated HPS certificate for ${intern.full_name}`);
     return newCert;
-  },
-
-  async revokeCertificate(certificateId, reason) {
-    if (isSupabaseConfigured()) {
-      try {
-        await supabase
-          .from('certificates')
-          .update({
-            status: 'REVOKED',
-            revocation_reason: reason,
-            revoked_at: new Date().toISOString()
-          })
-          .eq('id', certificateId);
-      } catch (err) {
-        console.warn('Supabase revoke failed', err);
-      }
-    }
-
-    const list = getStoredCertificates();
-    const updated = list.map((c) => {
-      if (c.id === certificateId) {
-        auditService.logAction('CERTIFICATE_REVOKED', 'CERTIFICATE', c.certificate_number, `Revoked certificate: ${reason}`);
-        return {
-          ...c,
-          status: 'REVOKED',
-          revocation_reason: reason,
-          revoked_at: new Date().toISOString()
-        };
-      }
-      return c;
-    });
-    saveStoredCertificates(updated);
-    return updated.find((c) => c.id === certificateId);
   }
 };
