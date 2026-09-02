@@ -1,6 +1,6 @@
 import { INITIAL_CERTIFICATES } from './mockData';
 import { supabase, isSupabaseConfigured } from './supabase';
-import { generateCertificateId, generateVerificationToken } from '../utils/helpers';
+import { generateCertificateId, generateVerificationToken, generateEmpId, calculateDuration } from '../utils/helpers';
 import { auditService } from './auditService';
 
 const STORAGE_KEY = 'certiflow_certificates';
@@ -63,24 +63,29 @@ export const certificateService = {
     }
 
     const list = getStoredCertificates();
-    const nextCounter = list.length + 125;
+    const nextCounter = list.length + 38;
     const certNumber = generateCertificateId(nextCounter);
+    const empId = intern.intern_code || generateEmpId(nextCounter);
     const token = generateVerificationToken();
+    const duration = intern.duration || calculateDuration(intern.start_date, intern.end_date);
 
     const newCert = {
       id: 'cert-' + Date.now(),
       certificate_number: certNumber,
       intern_id: intern.id,
       intern_name: intern.full_name,
-      internship_title: intern.internship_title,
-      department: intern.department,
+      gender: intern.gender || 'Female',
+      intern_code: empId,
+      internship_title: intern.internship_title || 'SDE Intern',
+      department: intern.department || 'Software Development',
+      duration: duration,
       start_date: intern.start_date,
       end_date: intern.end_date,
-      supervisor_name: intern.supervisor_name || 'Authorized Signatory',
+      supervisor_name: intern.supervisor_name || 'Director',
       issued_date: new Date().toISOString().split('T')[0],
       verification_token: token,
       status: 'VALID',
-      pdf_path: `certificates/${new Date().getFullYear()}/${certNumber}.pdf`,
+      pdf_path: `certificates/${new Date().getFullYear()}/${certNumber.replace(/\//g, '_')}.pdf`,
       created_at: new Date().toISOString()
     };
 
@@ -88,7 +93,7 @@ export const certificateService = {
       try {
         const { data, error } = await supabase.from('certificates').insert([newCert]).select().single();
         if (!error && data) {
-          await auditService.logAction('CERTIFICATE_GENERATED', 'CERTIFICATE', certNumber, `Generated certificate for ${intern.full_name}`);
+          await auditService.logAction('CERTIFICATE_GENERATED', 'CERTIFICATE', certNumber, `Generated HPS certificate for ${intern.full_name}`);
           return data;
         }
       } catch (err) {
@@ -98,7 +103,7 @@ export const certificateService = {
 
     const updated = [newCert, ...list];
     saveStoredCertificates(updated);
-    await auditService.logAction('CERTIFICATE_GENERATED', 'CERTIFICATE', certNumber, `Generated certificate for ${intern.full_name}`);
+    await auditService.logAction('CERTIFICATE_GENERATED', 'CERTIFICATE', certNumber, `Generated HPS certificate for ${intern.full_name}`);
     return newCert;
   },
 

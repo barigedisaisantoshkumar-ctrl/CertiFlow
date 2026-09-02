@@ -10,7 +10,7 @@ import { CertificatePreviewModal } from '../components/certificates/CertificateP
 import { internService } from '../services/internService';
 import { certificateService } from '../services/certificateService';
 import { calculateInternshipStatus, formatDate } from '../utils/helpers';
-import { Search, Plus, Award, Edit, Trash2, ShieldCheck, Eye, Filter } from 'lucide-react';
+import { Search, Plus, Award, Edit, Trash2, ShieldCheck, Eye } from 'lucide-react';
 
 export function Interns() {
   const [interns, setInterns] = useState([]);
@@ -52,7 +52,7 @@ export function Interns() {
       showToast(`Updated intern record for ${formData.full_name}`);
     } else {
       await internService.createIntern(formData);
-      showToast(`Successfully added intern ${formData.full_name}`);
+      showToast(`Successfully added HPS intern ${formData.full_name}`);
     }
     setEditingIntern(null);
     loadData();
@@ -101,7 +101,8 @@ export function Interns() {
       intern.full_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       intern.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
       intern.intern_code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      intern.department.toLowerCase().includes(searchTerm.toLowerCase());
+      intern.department.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      intern.internship_title.toLowerCase().includes(searchTerm.toLowerCase());
 
     if (!matchesSearch) return false;
 
@@ -114,7 +115,7 @@ export function Interns() {
   });
 
   return (
-    <AppLayout title="Intern Directory & Certificate Issuance">
+    <AppLayout title="HPS Intern Directory & Certificate Operations">
       <div className="space-y-6">
         {/* Toast Alert Banner */}
         {toastMessage && (
@@ -128,7 +129,7 @@ export function Interns() {
         <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
           <div className="flex flex-1 items-center gap-3 w-full sm:w-auto">
             <Input
-              placeholder="Search by name, email, code or department..."
+              placeholder="Search by EMP ID, name, email, role or department..."
               icon={Search}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
@@ -166,12 +167,12 @@ export function Interns() {
             <table className="w-full text-left text-sm text-slate-600">
               <thead className="bg-slate-50/80 text-xs uppercase font-semibold text-slate-500 tracking-wider border-b border-slate-200/80">
                 <tr>
-                  <th className="px-4 py-3.5">Code / Intern Name</th>
-                  <th className="px-4 py-3.5">Department & Title</th>
-                  <th className="px-4 py-3.5">College & Email</th>
-                  <th className="px-4 py-3.5">Internship Dates</th>
+                  <th className="px-4 py-3.5">EMP ID / Name</th>
+                  <th className="px-4 py-3.5">Gender</th>
+                  <th className="px-4 py-3.5">Department & Role</th>
+                  <th className="px-4 py-3.5">Period & Duration</th>
                   <th className="px-4 py-3.5">Status</th>
-                  <th className="px-4 py-3.5">Certificate</th>
+                  <th className="px-4 py-3.5">HPS Certificate</th>
                   <th className="px-4 py-3.5 text-right">Actions</th>
                 </tr>
               </thead>
@@ -185,19 +186,19 @@ export function Interns() {
                       <tr key={intern.id} className="hover:bg-slate-50/60 transition-colors">
                         <td className="px-4 py-4">
                           <div className="font-bold text-slate-900">{intern.full_name}</div>
-                          <div className="text-xs font-mono text-slate-400">{intern.intern_code}</div>
+                          <div className="text-xs font-mono text-brand-600 font-semibold">{intern.intern_code}</div>
+                          <div className="text-[11px] text-slate-400">{intern.email}</div>
+                        </td>
+                        <td className="px-4 py-4 text-xs font-semibold text-slate-700">
+                          {intern.gender || 'Female'}
                         </td>
                         <td className="px-4 py-4">
-                          <div className="font-semibold text-slate-800">{intern.internship_title}</div>
+                          <div className="font-bold text-slate-800">{intern.internship_title}</div>
                           <div className="text-xs text-slate-500">{intern.department}</div>
                         </td>
-                        <td className="px-4 py-4">
-                          <div className="text-slate-700">{intern.email}</div>
-                          <div className="text-xs text-slate-400 truncate max-w-[180px]">{intern.college}</div>
-                        </td>
                         <td className="px-4 py-4 text-xs font-medium text-slate-600">
-                          <div>{formatDate(intern.start_date)}</div>
-                          <div className="text-slate-400">to {formatDate(intern.end_date)}</div>
+                          <div>{formatDate(intern.start_date, 'DD-MM-YYYY')} to {formatDate(intern.end_date, 'DD-MM-YYYY')}</div>
+                          <div className="text-brand-600 font-bold mt-0.5">{intern.duration || '3 Months'}</div>
                         </td>
                         <td className="px-4 py-4">
                           <StatusBadge status={status} type="internship" />
@@ -213,7 +214,7 @@ export function Interns() {
                             </button>
                           ) : status === 'COMPLETED' ? (
                             <span className="text-xs text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                              Eligible for Issuance
+                              Eligible for HPS Certificate
                             </span>
                           ) : (
                             <span className="text-xs text-slate-400">In Progress</span>

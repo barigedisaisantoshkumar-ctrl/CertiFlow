@@ -1,5 +1,5 @@
 /**
-  Helper utilities for CertiFlow application
+  Helper utilities for HPS CertiFlow application
 */
 
 // Calculate Internship Status based on start and end dates
@@ -24,16 +24,35 @@ export function calculateInternshipStatus(startDateStr, endDateStr) {
   }
 }
 
-// Format date for UI display (e.g., "01 June 2026")
-export function formatDate(dateString) {
+// Calculate Duration between two dates (e.g., "3 Months", "6 Months", "15 Days")
+export function calculateDuration(startDateStr, endDateStr) {
+  if (!startDateStr || !endDateStr) return '3 Months';
+  try {
+    const start = new Date(startDateStr);
+    const end = new Date(endDateStr);
+    const diffMonths = (end.getFullYear() - start.getFullYear()) * 12 + (end.getMonth() - start.getMonth());
+    if (diffMonths >= 1) {
+      return `${diffMonths} Month${diffMonths > 1 ? 's' : ''}`;
+    }
+    const diffDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    return `${diffDays} Days`;
+  } catch (e) {
+    return '3 Months';
+  }
+}
+
+// Format date for display (e.g., "16-05-2026" or "18/08/2026")
+export function formatDate(dateString, format = 'DD-MM-YYYY') {
   if (!dateString) return 'N/A';
   try {
     const d = new Date(dateString);
-    return d.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric'
-    });
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    if (format === 'DD/MM/YYYY') {
+      return `${day}/${month}/${year}`;
+    }
+    return `${day}-${month}-${year}`;
   } catch (e) {
     return dateString;
   }
@@ -46,14 +65,30 @@ export function formatDateForInput(dateString) {
   return d.toISOString().split('T')[0];
 }
 
-// Generate unique certificate ID format CERT-YYYY-XXXXXX
-export function generateCertificateId(counter = 1) {
+// Generate unique HPS Certificate Number format HPS/INT/YYYY/XXXX
+export function generateCertificateId(counter = 38) {
   const year = new Date().getFullYear();
-  const padNum = String(counter).padStart(6, '0');
-  return `CERT-${year}-${padNum}`;
+  const padNum = String(counter).padStart(4, '0');
+  return `HPS/INT/${year}/${padNum}`;
 }
 
-// Generate unpredictable verification token (UUID v4 style)
+// Generate EMP ID format HPS26XXXX
+export function generateEmpId(counter = 38) {
+  const yearShort = String(new Date().getFullYear()).slice(-2);
+  const padNum = String(counter).padStart(4, '0');
+  return `HPS${yearShort}${padNum}`;
+}
+
+// Generate unpredictable verification token
 export function generateVerificationToken() {
-  return 'cf-' + Math.random().toString(36).substring(2, 10) + '-' + Date.now().toString(36);
+  return 'hps-' + Math.random().toString(36).substring(2, 10) + '-' + Date.now().toString(36);
+}
+
+// Get pronoun based on gender (her / his / their)
+export function getPronoun(gender) {
+  if (!gender) return 'her/his';
+  const g = gender.toLowerCase();
+  if (g.includes('female') || g.includes('her')) return 'her';
+  if (g.includes('male') || g.includes('his')) return 'his';
+  return 'their';
 }

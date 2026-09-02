@@ -1,5 +1,5 @@
 -- CertiFlow PostgreSQL Database Migration & RLS Setup
--- Author: CertiFlow Development Team
+-- HPS Certificate Template Alignment
 
 -- 1. ENABLE EXTENSIONS
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -9,15 +9,17 @@ CREATE TABLE IF NOT EXISTS interns (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     intern_code TEXT UNIQUE NOT NULL,
     full_name TEXT NOT NULL,
+    gender TEXT DEFAULT 'Female',
     email TEXT NOT NULL,
     phone TEXT,
     college TEXT,
     course TEXT,
     department TEXT NOT NULL,
     internship_title TEXT NOT NULL,
+    duration TEXT DEFAULT '3 Months',
     start_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    supervisor_name TEXT,
+    supervisor_name TEXT DEFAULT 'Director',
     supervisor_email TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
