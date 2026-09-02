@@ -19,7 +19,10 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
   const issueDate = formatDate(certificate?.issued_date || new Date().toISOString(), 'DD/MM/YYYY');
   const supervisor = certificate?.supervisor_name || intern?.supervisor_name || 'Director';
 
-  const defaultUrl = verificationUrl || `${window.location.origin}/verify/${certificate?.verification_token || 'token-dipika-reddy-2026-v1'}`;
+  // Dynamic QR Code target URL for public verification
+  const defaultUrl = verificationUrl || (typeof window !== 'undefined'
+    ? `${window.location.origin}/verify/${certificate?.verification_token || 'token-dipika-reddy-2026-v1'}`
+    : `https://certiflow.com/verify/${certificate?.verification_token || 'token-dipika-reddy-2026-v1'}`);
 
   return (
     <div
@@ -28,11 +31,17 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
       className="bg-white text-slate-900 border-[8px] border-[#0A2540] p-8 sm:p-10 relative overflow-hidden select-none w-full aspect-[1.414/1] max-w-[900px] mx-auto shadow-2xl flex flex-col justify-between"
       style={{ fontFamily: "'Satoshi', sans-serif" }}
     >
-      {/* Background Graphic Pattern */}
-      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/20 via-white to-slate-50/40 pointer-events-none"></div>
+      {/* Background High-Res Template Overlay */}
+      <div
+        className="absolute inset-0 opacity-15 bg-cover bg-center pointer-events-none"
+        style={{ backgroundImage: "url('/hps-template/hps_template_background.png')" }}
+      ></div>
 
-      {/* Top Header with HPS Logo */}
-      <div className="flex items-center justify-between border-b-2 border-slate-200/80 pb-4 relative z-10">
+      {/* Decorative Background Gradient */}
+      <div className="absolute inset-0 bg-gradient-to-br from-blue-50/30 via-white to-slate-50/50 pointer-events-none"></div>
+
+      {/* Top Header with HPS Company Logo */}
+      <div className="flex items-center justify-between border-b-2 border-slate-200/90 pb-4 relative z-10">
         <div className="flex items-center gap-4">
           <img
             src="/hps-template/hps_logo.png"
@@ -43,40 +52,40 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
             }}
           />
           <div>
-            <h3 className="text-lg font-black tracking-tight text-[#0A2540] leading-none">
+            <h3 className="text-xl font-black tracking-tight text-[#0A2540] leading-none">
               HPS (OPC) Pvt. Ltd.
             </h3>
-            <p className="text-[10px] uppercase font-bold text-slate-400 tracking-widest mt-0.5">
-              Software Development & IT Solutions
+            <p className="text-[10px] uppercase font-extrabold text-slate-400 tracking-widest mt-1">
+              Software Development & IT Solutions Provider
             </p>
           </div>
         </div>
 
         <div className="text-right">
-          <span className="inline-block text-[11px] font-black uppercase tracking-wider text-[#0A2540] bg-blue-50/80 px-3 py-1 rounded-full border border-blue-200/80">
-            Official Document
+          <span className="inline-block text-[11px] font-black uppercase tracking-wider text-[#0A2540] bg-blue-50 px-3.5 py-1 rounded-full border border-blue-200">
+            OFFICIAL CERTIFICATE
           </span>
         </div>
       </div>
 
-      {/* Certificate Main Title & Award Section */}
+      {/* Certificate Body Content */}
       <div className="text-center py-4 my-auto relative z-10 space-y-3">
         <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-[0.2em] text-[#0A2540] border-b-2 border-[#2C91E3] inline-block pb-1">
           CERTIFICATE OF INTERNSHIP
         </h1>
 
-        <p className="text-xs sm:text-sm font-semibold text-slate-500 uppercase tracking-wider">
+        <p className="text-xs sm:text-sm font-bold text-slate-500 uppercase tracking-wider">
           This internship program certificate is proudly awarded to
         </p>
 
         {/* Recipient Full Name */}
         <div className="py-1">
-          <h2 className="text-2xl sm:text-3xl font-black text-[#2C91E3] tracking-tight uppercase">
+          <h2 className="text-2xl sm:text-3xl font-black text-[#2C91E3] tracking-tight uppercase drop-shadow-2xs">
             {name}
           </h2>
         </div>
 
-        {/* Dynamic Body Paragraph */}
+        {/* Paragraph Text */}
         <p className="text-xs sm:text-sm text-slate-700 max-w-2xl mx-auto leading-relaxed px-4">
           For <strong className="text-slate-900 font-bold">{pronoun}</strong> successful completion of the{' '}
           <strong className="text-slate-900 font-bold">{role}</strong> Internship Program at{' '}
@@ -84,24 +93,24 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
           strong work ethic and valuable contributions to software development projects.
         </p>
 
-        {/* Period & Duration */}
+        {/* Dates & Duration */}
         <div className="pt-2 flex items-center justify-center gap-6 text-xs sm:text-sm font-bold text-slate-800">
           <div>
             <span className="text-slate-500 font-medium">Internship Period: </span>
-            <span>{startDate} to {endDate}</span>
+            <span className="font-bold text-slate-900">{startDate} to {endDate}</span>
           </div>
           <span className="text-slate-300">•</span>
           <div>
             <span className="text-slate-500 font-medium">Duration: </span>
-            <span>{duration}</span>
+            <span className="font-bold text-slate-900">{duration}</span>
           </div>
         </div>
       </div>
 
-      {/* Bottom Information Grid & Signatures */}
-      <div className="pt-4 border-t-2 border-slate-200/80 grid grid-cols-3 gap-4 items-end relative z-10">
-        {/* Metadata Details Table */}
-        <div className="col-span-2 text-xs space-y-1 bg-slate-50/70 p-3 rounded-xl border border-slate-200/70">
+      {/* Bottom Grid: Metadata, Signature, and QR Code below "Scan verify certificate" */}
+      <div className="pt-4 border-t-2 border-slate-200/90 grid grid-cols-3 gap-4 items-end relative z-10">
+        {/* Left: Metadata Details Table */}
+        <div className="col-span-2 text-xs space-y-1 bg-slate-50/80 p-3 rounded-xl border border-slate-200/80 shadow-2xs">
           <div className="grid grid-cols-2 gap-x-4 gap-y-1">
             <div>
               <span className="font-semibold text-slate-500">Department: </span>
@@ -109,7 +118,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
             </div>
             <div>
               <span className="font-semibold text-slate-500">Certificate No.: </span>
-              <strong className="text-slate-900 font-mono">{certId}</strong>
+              <strong className="text-[#0A2540] font-mono font-extrabold">{certId}</strong>
             </div>
             <div>
               <span className="font-semibold text-slate-500">Role: </span>
@@ -117,7 +126,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
             </div>
             <div>
               <span className="font-semibold text-slate-500">EMP ID: </span>
-              <strong className="text-slate-900 font-mono">{empId}</strong>
+              <strong className="text-[#0A2540] font-mono font-extrabold">{empId}</strong>
             </div>
             <div className="col-span-2">
               <span className="font-semibold text-slate-500">Date of Issue: </span>
@@ -126,8 +135,9 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
           </div>
         </div>
 
-        {/* Director Signature & Verification QR */}
+        {/* Right: Signature & QR Code Box below "Scan verify certificate" */}
         <div className="flex items-center justify-end gap-4">
+          {/* Director Signature */}
           <div className="text-center">
             <img
               src="/hps-template/director_signature.png"
@@ -140,14 +150,24 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
             <div className="text-xs font-bold text-slate-900 border-t border-slate-400 pt-1 mt-1">
               {supervisor}
             </div>
-            <div className="text-[9px] font-semibold text-slate-500 uppercase tracking-wider">
+            <div className="text-[9px] font-bold text-slate-500 uppercase tracking-wider">
               HPS (OPC) Pvt. Ltd.
             </div>
           </div>
 
-          <div className="bg-white p-1.5 rounded-lg border border-slate-200 shadow-2xs text-center shrink-0">
-            <QRCodeSVG value={defaultUrl} size={54} level="H" />
-            <div className="text-[8px] font-bold text-slate-500 mt-1">Scan to Verify</div>
+          {/* Dedicated QR Code Box below "Scan verify certificate" */}
+          <div className="bg-white p-2 rounded-xl border border-slate-300 shadow-md text-center shrink-0 flex flex-col items-center">
+            <div className="text-[9px] font-black text-[#0A2540] uppercase tracking-wider mb-1.5 leading-tight">
+              Scan verify certificate
+            </div>
+            <div className="bg-white p-1 rounded-lg border border-slate-200 shadow-2xs">
+              <QRCodeSVG
+                value={defaultUrl}
+                size={58}
+                level="H"
+                includeMargin={false}
+              />
+            </div>
           </div>
         </div>
       </div>
