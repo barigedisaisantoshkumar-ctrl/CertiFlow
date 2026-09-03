@@ -28,43 +28,35 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
     <div
       ref={innerRef}
       id="certificate-print-container"
-      className="bg-white text-slate-900 border-[10px] border-[#0A2540] p-8 sm:p-10 relative overflow-hidden select-none w-full aspect-[1.414/1] max-w-[950px] mx-auto shadow-2xl flex flex-col justify-between"
+      className="bg-white text-slate-900 border-[3px] border-[#0A2540] p-6 sm:p-10 relative overflow-hidden select-none w-full aspect-[1.414/1] max-w-[950px] mx-auto shadow-2xl flex flex-col justify-between"
       style={{ fontFamily: "'Satoshi', system-ui, sans-serif" }}
     >
-      {/* 1. Top-Left Geometric Triangles Accent (Black & Blue matching HPS Template) */}
-      <div className="absolute top-0 left-0 w-36 h-36 pointer-events-none z-0">
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          <polygon points="0,0 100,0 0,100" fill="#0A2540" />
-          <polygon points="0,0 55,0 0,100" fill="#2C91E3" />
-        </svg>
-      </div>
+      {/* 1. Authentic Top-Left Geometric Shapes extracted from HPS Template.png */}
+      <img
+        src="/hps-template/top_left_corner.png"
+        alt=""
+        className="absolute top-0 left-0 w-[24%] h-auto pointer-events-none z-0"
+      />
 
-      {/* 2. Bottom-Right Geometric Triangles Accent (Black & Blue matching HPS Template) */}
-      <div className="absolute bottom-0 right-0 w-36 h-36 pointer-events-none z-0">
-        <svg viewBox="0 0 100 100" className="w-full h-full">
-          <polygon points="100,100 0,100 100,0" fill="#0A2540" />
-          <polygon points="100,100 45,100 100,0" fill="#2C91E3" />
-        </svg>
-      </div>
+      {/* 2. Authentic Bottom-Right Geometric Shapes extracted from HPS Template.png */}
+      <img
+        src="/hps-template/bottom_right_corner.png"
+        alt=""
+        className="absolute bottom-0 right-0 w-[24%] h-auto pointer-events-none z-0"
+      />
 
-      {/* 3. Subtle Wave Background Graphic */}
-      <div className="absolute inset-0 opacity-[0.04] pointer-events-none bg-[radial-gradient(#2C91E3_1px,transparent_1px)] [background-size:16px_16px]"></div>
-
-      {/* 4. Top Header with HPS Logo */}
-      <div className="flex flex-col items-center justify-center relative z-10 pt-1">
+      {/* 3. Top Header with Clean HPS Logo */}
+      <div className="flex flex-col items-center justify-center relative z-10 pt-2">
         <img
-          src="/hps-template/hps_logo.png"
-          alt="HPS Logo"
-          className="h-14 sm:h-16 w-auto object-contain mb-1"
-          onError={(e) => {
-            e.target.style.display = 'none';
-          }}
+          src="/hps-template/clean_hps_logo.png"
+          alt="HPS HARSHA PERFECT SOLUTIONS Logo"
+          className="h-14 sm:h-16 w-auto object-contain mx-auto"
         />
       </div>
 
-      {/* 5. Main Title & Dynamic Award Section */}
+      {/* 4. Main Certificate Title & Dynamic Recipient Section */}
       <div className="text-center py-2 my-auto relative z-10 space-y-2.5">
-        {/* Title & Diamond Line */}
+        {/* Title & Central Blue Diamond Divider Line */}
         <div className="space-y-1">
           <h1 className="text-2xl sm:text-3xl font-black uppercase tracking-[0.18em] text-[#0A2540]">
             CERTIFICATE OF INTERNSHIP
@@ -82,7 +74,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
 
         {/* Dynamic Recipient Name & Underline */}
         <div className="py-1">
-          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0A2540] tracking-wide uppercase font-serif">
+          <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0A2540] tracking-wider uppercase font-serif">
             {name}
           </h2>
           <div className="w-80 h-[1.5px] bg-[#2C91E3] mx-auto mt-2"></div>
@@ -98,7 +90,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
 
         {/* Dynamic Period & Duration Box */}
         <div className="pt-2">
-          <div className="inline-flex items-center gap-3 border border-[#94A3B8] px-5 py-1.5 rounded-xs bg-slate-50/50 text-xs sm:text-sm font-semibold text-slate-800">
+          <div className="inline-flex items-center gap-3 border border-[#94A3B8] px-5 py-1.5 rounded-xs bg-white text-xs sm:text-sm font-semibold text-slate-800 shadow-2xs">
             <div>
               <span className="text-[#2C91E3] font-bold">Internship Period: </span>
               <span className="font-bold text-slate-900">{startDate} to {endDate}</span>
@@ -112,9 +104,9 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
         </div>
       </div>
 
-      {/* 6. Bottom Metadata Table, QR Code Box, and Director Signature */}
+      {/* 5. Bottom Section: Metadata List, QR Code Box, and Clean Director Signature */}
       <div className="pt-2 grid grid-cols-12 gap-2 items-end relative z-10">
-        {/* Left Column: Dynamic Metadata List */}
+        {/* Left Column: Metadata Details List */}
         <div className="col-span-5 text-xs font-semibold text-slate-800 space-y-1 pl-2">
           <div className="grid grid-cols-[110px_10px_1fr] items-center">
             <span className="text-[#0A2540] font-bold">Department</span>
@@ -158,10 +150,10 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
           </div>
         </div>
 
-        {/* Right Column: Director Signature */}
+        {/* Right Column: Clean Director Signature */}
         <div className="col-span-4 flex flex-col items-center justify-end text-center pr-2">
           <img
-            src="/hps-template/director_signature.png"
+            src="/hps-template/clean_signature.png"
             alt="Director Signature"
             className="h-10 sm:h-12 w-auto mx-auto object-contain"
             onError={(e) => {
