@@ -5,12 +5,13 @@ import { Button } from '../components/ui/Button';
 import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { Pagination } from '../components/ui/Pagination';
 import { AddInternModal } from './AddInternModal';
 import { CertificatePreviewModal } from '../components/certificates/CertificatePreviewModal';
 import { internService } from '../services/internService';
 import { certificateService } from '../services/certificateService';
 import { calculateInternshipStatus, formatDate } from '../utils/helpers';
-import { Search, Plus, Award, Edit, Trash2, ShieldCheck, Eye } from 'lucide-react';
+import { Search, Plus, Award, Edit, Trash2, ShieldCheck, Eye, Sparkles } from 'lucide-react';
 
 export function Interns() {
   const [interns, setInterns] = useState([]);
@@ -23,6 +24,10 @@ export function Interns() {
   const [previewIntern, setPreviewIntern] = useState(null);
   const [isGeneratingCertId, setIsGeneratingCertId] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
+
+  // Pagination State
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(10);
 
   const loadData = async () => {
     try {
@@ -92,7 +97,7 @@ export function Interns() {
     setPreviewIntern(intern);
   };
 
-  // Search and Filter Logic
+  // Filter Logic
   const filteredInterns = interns.filter((intern) => {
     const status = calculateInternshipStatus(intern.start_date, intern.end_date);
     const existingCert = certificates.find((c) => c.intern_id === intern.id && c.status === 'VALID');
@@ -114,19 +119,28 @@ export function Interns() {
     return true;
   });
 
+  // Reset pagination to page 1 on filter change
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [searchTerm, statusFilter, pageSize]);
+
+  // Paginated Interns
+  const totalPages = Math.ceil(filteredInterns.length / pageSize) || 1;
+  const paginatedInterns = filteredInterns.slice((currentPage - 1) * pageSize, currentPage * pageSize);
+
   return (
     <AppLayout title="HPS Intern Directory & Certificate Operations">
-      <div className="space-y-6">
+      <div className="space-y-5">
         {/* Toast Alert Banner */}
         {toastMessage && (
-          <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold rounded-xl flex items-center gap-2 shadow-sm animate-in fade-in">
-            <ShieldCheck className="w-5 h-5 text-emerald-600" />
+          <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold rounded-2xl flex items-center gap-2 shadow-sm animate-in fade-in">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
             {toastMessage}
           </div>
         )}
 
         {/* Toolbar Header */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-xl border border-slate-200/80 shadow-2xs">
+        <div className="flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-2xl border border-slate-200/80 shadow-2xs">
           <div className="flex flex-1 items-center gap-3 w-full sm:w-auto">
             <Input
               placeholder="Search by EMP ID, name, email, role or department..."
@@ -162,65 +176,65 @@ export function Interns() {
         </div>
 
         {/* Intern Directory Table */}
-        <Card>
+        <Card className="p-0 border border-slate-200/90 rounded-2xl overflow-hidden shadow-xs">
           <div className="overflow-x-auto">
             <table className="w-full text-left text-sm text-slate-600">
-              <thead className="bg-slate-50/80 text-xs uppercase font-semibold text-slate-500 tracking-wider border-b border-slate-200/80">
+              <thead className="bg-slate-50/90 text-xs uppercase font-bold text-slate-500 tracking-wider border-b border-slate-200/80">
                 <tr>
-                  <th className="px-4 py-3.5">EMP ID / Name</th>
-                  <th className="px-4 py-3.5">Gender</th>
-                  <th className="px-4 py-3.5">Department & Role</th>
-                  <th className="px-4 py-3.5">Period & Duration</th>
-                  <th className="px-4 py-3.5">Status</th>
-                  <th className="px-4 py-3.5">HPS Certificate</th>
-                  <th className="px-4 py-3.5 text-right">Actions</th>
+                  <th className="px-5 py-4">EMP ID / Name</th>
+                  <th className="px-5 py-4">Gender</th>
+                  <th className="px-5 py-4">Department & Role</th>
+                  <th className="px-5 py-4">Period & Duration</th>
+                  <th className="px-5 py-4">Status</th>
+                  <th className="px-5 py-4">HPS Certificate</th>
+                  <th className="px-5 py-4 text-right">Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredInterns.length > 0 ? (
-                  filteredInterns.map((intern) => {
+              <tbody className="divide-y divide-slate-100 bg-white">
+                {paginatedInterns.length > 0 ? (
+                  paginatedInterns.map((intern) => {
                     const status = calculateInternshipStatus(intern.start_date, intern.end_date);
                     const validCert = certificates.find((c) => c.intern_id === intern.id && c.status === 'VALID');
 
                     return (
-                      <tr key={intern.id} className="hover:bg-slate-50/60 transition-colors">
-                        <td className="px-4 py-4">
-                          <div className="font-bold text-slate-900">{intern.full_name}</div>
-                          <div className="text-xs font-mono text-brand-600 font-semibold">{intern.intern_code}</div>
+                      <tr key={intern.id} className="hover:bg-blue-50/30 transition-colors">
+                        <td className="px-5 py-4">
+                          <div className="font-extrabold text-slate-900">{intern.full_name}</div>
+                          <div className="text-xs font-mono text-brand-600 font-bold mt-0.5">{intern.intern_code}</div>
                           <div className="text-[11px] text-slate-400">{intern.email}</div>
                         </td>
-                        <td className="px-4 py-4 text-xs font-semibold text-slate-700">
+                        <td className="px-5 py-4 text-xs font-semibold text-slate-700">
                           {intern.gender || 'Female'}
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-5 py-4">
                           <div className="font-bold text-slate-800">{intern.internship_title}</div>
                           <div className="text-xs text-slate-500">{intern.department}</div>
                         </td>
-                        <td className="px-4 py-4 text-xs font-medium text-slate-600">
+                        <td className="px-5 py-4 text-xs font-medium text-slate-600">
                           <div>{formatDate(intern.start_date, 'DD-MM-YYYY')} to {formatDate(intern.end_date, 'DD-MM-YYYY')}</div>
                           <div className="text-brand-600 font-bold mt-0.5">{intern.duration || '3 Months'}</div>
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-5 py-4">
                           <StatusBadge status={status} type="internship" />
                         </td>
-                        <td className="px-4 py-4">
+                        <td className="px-5 py-4">
                           {validCert ? (
                             <button
                               onClick={() => handleViewCertificate(intern, validCert)}
-                              className="inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-2.5 py-1 rounded-full transition-colors"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-full transition-all shadow-2xs"
                             >
                               <ShieldCheck className="w-3.5 h-3.5" />
                               {validCert.certificate_number}
                             </button>
                           ) : status === 'COMPLETED' ? (
-                            <span className="text-xs text-amber-700 font-semibold bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
+                            <span className="text-xs text-amber-700 font-semibold bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
                               Eligible for HPS Certificate
                             </span>
                           ) : (
-                            <span className="text-xs text-slate-400">In Progress</span>
+                            <span className="text-xs text-slate-400 font-medium">In Progress</span>
                           )}
                         </td>
-                        <td className="px-4 py-4 text-right">
+                        <td className="px-5 py-4 text-right">
                           <div className="flex items-center justify-end gap-1.5">
                             {validCert ? (
                               <Button
@@ -249,7 +263,7 @@ export function Interns() {
                                 setEditingIntern(intern);
                                 setIsAddModalOpen(true);
                               }}
-                              className="p-1.5 text-slate-400 hover:text-slate-600 hover:bg-slate-100 rounded-lg transition-colors"
+                              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
                               title="Edit Intern"
                             >
                               <Edit className="w-4 h-4" />
@@ -257,7 +271,7 @@ export function Interns() {
 
                             <button
                               onClick={() => handleDeleteIntern(intern.id, intern.full_name)}
-                              className="p-1.5 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                              className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors"
                               title="Delete Record"
                             >
                               <Trash2 className="w-4 h-4" />
@@ -269,13 +283,26 @@ export function Interns() {
                   })
                 ) : (
                   <tr>
-                    <td colSpan={7} className="px-6 py-12 text-center text-slate-400">
+                    <td colSpan={7} className="px-6 py-12 text-center text-slate-400 font-medium">
                       No intern records found matching search filters.
                     </td>
                   </tr>
                 )}
               </tbody>
             </table>
+          </div>
+
+          {/* Pagination Controls */}
+          <div className="p-4 bg-white border-t border-slate-100">
+            <Pagination
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={setCurrentPage}
+              pageSize={pageSize}
+              onPageSizeChange={setPageSize}
+              totalItems={filteredInterns.length}
+              itemName="interns"
+            />
           </div>
         </Card>
 
