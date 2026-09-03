@@ -105,5 +105,62 @@ export const certificateService = {
     saveStoredCertificates(updated);
     await auditService.logAction('CERTIFICATE_GENERATED', 'CERTIFICATE', certNumber, `Generated HPS certificate for ${intern.full_name}`);
     return newCert;
+  },
+
+  async revokeCertificate(certId, reason) {
+    const revokedAt = new Date().toISOString();
+
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('certificates')
+          .update({
+            status: 'REVOKED',
+            revocation_reason: reason,
+            revoked_at: revokedAt
+          })
+          .eq('id', certId)
+          .select()
+          .single();
+        if (!error && data) {
+          await auditService.logAction(
+            'CERTIFICATE_REVOKED',
+            'CERTIFICATE',
+            data.certificate_number,
+            `Revoked certificate: ${reason}`
+          );
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase revoke failed, updating locally', err);
+      }
+    }
+
+    const list = getStoredCertificates();
+    let revokedCert = null;
+    const updated = list.map((c) => {
+      if (c.id === certId) {
+        revokedCert = {
+          ...c,
+          status: 'REVOKED',
+          revocation_reason: reason,
+          revoked_at: revokedAt
+        };
+        return revokedCert;
+      }
+      return c;
+    });
+
+    saveStoredCertificates(updated);
+    if (revokedCert) {
+      await auditService.logAction(
+        'CERTIFICATE_REVOKED',
+        'CERTIFICATE',
+        revokedCert.certificate_number,
+        `Revoked certificate: ${reason}`
+      );
+    }
+    return revokedCert;
   }
 };
+

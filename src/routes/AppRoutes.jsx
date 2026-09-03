@@ -5,7 +5,6 @@ import { Login } from '../pages/Login';
 import { Dashboard } from '../pages/Dashboard';
 import { Interns } from '../pages/Interns';
 import { Certificates } from '../pages/Certificates';
-import { Templates } from '../pages/Templates';
 import { AuditLogs } from '../pages/AuditLogs';
 import { VerifyCertificate } from '../pages/VerifyCertificate';
 
@@ -46,14 +45,6 @@ export function AppRoutes() {
         element={
           <ProtectedRoute>
             <Certificates />
-          </ProtectedRoute>
-        }
-      />
-      <Route
-        path="/templates"
-        element={
-          <ProtectedRoute>
-            <Templates />
           </ProtectedRoute>
         }
       />

@@ -4,7 +4,6 @@ import {
   LayoutDashboard, 
   Users, 
   Award, 
-  FileText, 
   History, 
   LogOut,
   ChevronRight,
@@ -34,7 +33,6 @@ export function Sidebar() {
     { label: 'Dashboard', path: '/dashboard', icon: LayoutDashboard },
     { label: 'Interns', path: '/interns', icon: Users },
     { label: 'Certificates', path: '/certificates', icon: Award },
-    { label: 'Templates', path: '/templates', icon: FileText },
     { label: 'Audit Logs', path: '/audit-logs', icon: History },
   ];
 
@@ -66,7 +64,7 @@ export function Sidebar() {
             <div className="relative group shrink-0">
               <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-brand-400 rounded-full blur-xs opacity-60 group-hover:opacity-100 transition duration-300"></div>
               <div className="relative w-10 h-10 rounded-full bg-slate-900 border border-brand-500/40 flex items-center justify-center p-1.5 shadow-lg">
-                <img src="/favicon.png" alt="CertiFlow Logo" className="w-full h-full object-contain" />
+                <img src="/hps-template/favicon.png" alt="CertiFlow Logo" className="w-full h-full object-contain" />
               </div>
             </div>
 
