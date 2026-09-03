@@ -31,35 +31,28 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
       className="bg-white text-slate-900 border-[3px] border-[#0A2540] p-6 sm:p-10 relative overflow-hidden select-none w-full aspect-[1.414/1] max-w-[950px] mx-auto shadow-2xl flex flex-col justify-between"
       style={{ fontFamily: "'Satoshi', system-ui, sans-serif" }}
     >
-      {/* 1. SVG Top-Left Geometric Triangles Accent (Black & Blue matching HPS Template) */}
-      <div className="absolute top-0 left-0 w-44 h-44 pointer-events-none z-0">
+      {/* 1. Top-Left Geometric Triangles Accent (Black & Blue matching HPS Template) */}
+      <div className="absolute top-0 left-0 w-32 sm:w-36 h-32 sm:h-36 pointer-events-none z-0">
         <svg viewBox="0 0 200 200" className="w-full h-full">
-          {/* Blue outer polygon */}
-          <polygon points="0,0 120,0 0,200" fill="#2C91E3" />
-          {/* Black inner polygon */}
+          <polygon points="0,0 115,0 0,200" fill="#2C91E3" />
           <polygon points="0,0 200,0 80,200 0,200" fill="#0A2540" />
         </svg>
       </div>
 
-      {/* 2. SVG Bottom-Right Geometric Triangles Accent (Black & Blue matching HPS Template) */}
-      <div className="absolute bottom-0 right-0 w-44 h-44 pointer-events-none z-0">
+      {/* 2. Bottom-Right Geometric Triangles Accent (Black & Blue matching HPS Template) */}
+      <div className="absolute bottom-0 right-0 w-32 sm:w-36 h-32 sm:h-36 pointer-events-none z-0">
         <svg viewBox="0 0 200 200" className="w-full h-full">
-          {/* Black inner polygon */}
           <polygon points="200,200 0,200 120,0 200,0" fill="#0A2540" />
-          {/* Blue outer polygon */}
-          <polygon points="200,200 80,200 200,0" fill="#2C91E3" />
+          <polygon points="200,200 85,200 200,0" fill="#2C91E3" />
         </svg>
       </div>
 
-      {/* 3. Top Header with HPS Company Logo */}
+      {/* 3. Top Header with Exact HPS Logo (Pure White Background, Zero Black Box) */}
       <div className="flex flex-col items-center justify-center relative z-10 pt-1">
         <img
-          src="/hps-template/hps_logo.png"
+          src="/hps-template/exact_hps_logo.png"
           alt="HPS HARSHA PERFECT SOLUTIONS Logo"
-          className="h-12 sm:h-14 w-auto object-contain mx-auto"
-          onError={(e) => {
-            e.target.src = '/hps-template/clean_hps_logo.png';
-          }}
+          className="h-14 sm:h-16 w-auto object-contain mx-auto"
         />
       </div>
 
@@ -113,7 +106,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
         </div>
       </div>
 
-      {/* 5. Bottom Section: Metadata List, QR Code Box, and Clean Transparent Signature */}
+      {/* 5. Bottom Section: Metadata List, QR Code Box, and Crisp Signature */}
       <div className="pt-2 grid grid-cols-12 gap-2 items-end relative z-10">
         {/* Left Column: Metadata Details List */}
         <div className="col-span-5 text-xs font-semibold text-slate-800 space-y-1 pl-2">
@@ -159,15 +152,15 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
           </div>
         </div>
 
-        {/* Right Column: Clean Transparent User Signature */}
-        <div className="col-span-4 flex flex-col items-center justify-end text-center pr-2">
+        {/* Right Column: Crisp Transparent User Signature (Zero Overlap with Corner Shape) */}
+        <div className="col-span-4 flex flex-col items-center justify-end text-center pr-4 relative z-10">
           <img
-            src="/hps-template/clean_user_signature.png"
+            src="/hps-template/crisp_signature.png"
             alt="Director Signature"
-            className="h-12 sm:h-14 w-auto mx-auto object-contain mb-1"
+            className="h-10 sm:h-12 w-auto mx-auto object-contain mb-1"
           />
-          <div className="w-36 h-[1px] bg-slate-800 my-1 mx-auto"></div>
-          <div className="text-xs sm:text-sm font-bold text-slate-900 leading-tight">
+          <div className="w-32 h-[1.5px] bg-[#0A2540] my-1 mx-auto"></div>
+          <div className="text-xs sm:text-sm font-bold text-[#0A2540] leading-tight">
             {supervisor}
           </div>
         </div>
