@@ -33,24 +33,24 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
     >
       {/* 1. Top-Left Corner Shape from reuploaded template_HPS.png */}
       <img
-        src="/hps-template/hps_clean_tl_shape.png"
+        src="/hps-template/hps_top-removebg-preview.png"
         alt=""
         className="absolute top-0 left-0 w-[21%] h-auto pointer-events-none z-0"
       />
 
       {/* 2. Bottom-Right Corner Shape from reuploaded template_HPS.png */}
       <img
-        src="/hps-template/hps_clean_br_shape.png"
+        src="/hps-template/hps_bottom-removebg-preview.png"
         alt=""
-        className="absolute bottom-0 right-0 w-[21%] h-auto pointer-events-none z-0"
+        className="absolute bottom-0 right-[-1px] w-[22%] h-auto pointer-events-none z-0"
       />
 
       {/* 3. Top Header with HPS Logo */}
       <div className="flex flex-col items-center justify-center relative z-10 pt-1">
         <img
-          src="/hps-template/hps_logo.png"
+          src="hps-template/hps_logo.png"
           alt="HPS HARSHA PERFECT SOLUTIONS Logo"
-          className="h-14 sm:h-16 w-auto object-contain mx-auto"
+          className="h-18 sm:h-20 w-auto object-contain mx-auto"
         />
       </div>
 
@@ -153,9 +153,9 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
         {/* Right Column: Requested signature.png (Transparent background with gap from corner shape) */}
         <div className="col-span-4 flex flex-col items-center justify-end text-center pr-10 sm:pr-14 relative z-10">
           <img
-            src="/hps-template/clean_user_signature.png"
+            src="/hps-template/signature.png"
             alt="Director Signature"
-            className="h-12 sm:h-14 w-auto mx-auto object-contain mb-1"
+            className="h-14 sm:h-16 w-auto mx-auto object-contain mb-1"
           />
           <div className="w-36 h-[1.5px] bg-[#0A2540] my-1 mx-auto"></div>
           <div className="text-xs sm:text-sm font-bold text-[#0A2540] leading-tight">
