@@ -31,21 +31,21 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
       className="bg-white text-slate-900 border-[3px] border-[#0A2540] p-6 sm:p-10 relative overflow-hidden select-none w-full aspect-[1.414/1] max-w-[950px] mx-auto shadow-2xl flex flex-col justify-between"
       style={{ fontFamily: "'Satoshi', system-ui, sans-serif" }}
     >
-      {/* 1. Authentic Top-Left Geometric Shape from HPS Template.png */}
+      {/* 1. Top-Left Corner Shape from reuploaded template_HPS.png */}
       <img
-        src="/hps-template/clean_top_left_shape.png"
+        src="/hps-template/hps_clean_tl_shape.png"
         alt=""
         className="absolute top-0 left-0 w-[21%] h-auto pointer-events-none z-0"
       />
 
-      {/* 2. Authentic Bottom-Right Geometric Shape from HPS Template.png */}
+      {/* 2. Bottom-Right Corner Shape from reuploaded template_HPS.png */}
       <img
-        src="/hps-template/clean_bottom_right_shape.png"
+        src="/hps-template/hps_clean_br_shape.png"
         alt=""
         className="absolute bottom-0 right-0 w-[21%] h-auto pointer-events-none z-0"
       />
 
-      {/* 3. Top Header with Requested hps_logo.png */}
+      {/* 3. Top Header with HPS Logo */}
       <div className="flex flex-col items-center justify-center relative z-10 pt-1">
         <img
           src="/hps-template/hps_logo.png"
@@ -104,7 +104,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
         </div>
       </div>
 
-      {/* 5. Bottom Section: Metadata List, QR Code Box, and Director Signature with Gap */}
+      {/* 5. Bottom Section: Metadata List, QR Code Box, and Requested signature.png */}
       <div className="pt-2 grid grid-cols-12 gap-2 items-end relative z-10">
         {/* Left Column: Metadata Details List */}
         <div className="col-span-5 text-xs font-semibold text-slate-800 space-y-1 pl-2">
@@ -150,14 +150,14 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
           </div>
         </div>
 
-        {/* Right Column: Director Signature with Clear Gap from Bottom-Right Corner Shape */}
+        {/* Right Column: Requested signature.png (Transparent background with gap from corner shape) */}
         <div className="col-span-4 flex flex-col items-center justify-end text-center pr-10 sm:pr-14 relative z-10">
           <img
-            src="/hps-template/crisp_signature.png"
+            src="/hps-template/clean_user_signature.png"
             alt="Director Signature"
-            className="h-10 sm:h-12 w-auto mx-auto object-contain mb-1"
+            className="h-12 sm:h-14 w-auto mx-auto object-contain mb-1"
           />
-          <div className="w-32 h-[1.5px] bg-[#0A2540] my-1 mx-auto"></div>
+          <div className="w-36 h-[1.5px] bg-[#0A2540] my-1 mx-auto"></div>
           <div className="text-xs sm:text-sm font-bold text-[#0A2540] leading-tight">
             {supervisor}
           </div>
