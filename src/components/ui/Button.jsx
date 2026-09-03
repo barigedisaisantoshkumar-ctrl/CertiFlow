@@ -13,20 +13,20 @@ export function Button({
   icon: Icon,
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg shadow-sm';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-full shadow-sm';
   
   const variants = {
-    primary: 'bg-brand-500 text-white hover:bg-brand-600 focus:ring-brand-500 shadow-brand-500/20 shadow-md hover:shadow-lg active:bg-brand-700',
-    secondary: 'bg-white text-slate-700 border border-slate-200 hover:bg-slate-50 hover:border-slate-300 focus:ring-brand-500',
-    outline: 'bg-transparent text-brand-600 border border-brand-500 hover:bg-brand-50 focus:ring-brand-500',
-    danger: 'bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-rose-600/20 shadow-md',
-    ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 shadow-none focus:ring-brand-500',
+    primary: 'bg-brand-500 text-white hover:bg-brand-600 focus:ring-brand-500 shadow-brand-500/20 shadow-md hover:shadow-lg active:bg-brand-700 active:scale-[0.98]',
+    secondary: 'bg-white text-slate-700 border border-slate-200/90 hover:bg-slate-50 hover:border-slate-300 focus:ring-brand-500 active:scale-[0.98]',
+    outline: 'bg-transparent text-brand-600 border border-brand-500 hover:bg-brand-50 focus:ring-brand-500 active:scale-[0.98]',
+    danger: 'bg-rose-600 text-white hover:bg-rose-700 focus:ring-rose-500 shadow-rose-600/20 shadow-md active:scale-[0.98]',
+    ghost: 'bg-transparent text-slate-600 hover:bg-slate-100 hover:text-slate-900 shadow-none focus:ring-brand-500 active:scale-[0.98]',
   };
 
   const sizes = {
-    sm: 'px-3 py-1.5 text-xs gap-1.5',
-    md: 'px-4 py-2 text-sm gap-2',
-    lg: 'px-5 py-2.5 text-base gap-2.5',
+    sm: 'px-3.5 py-1.5 text-xs gap-1.5',
+    md: 'px-5 py-2.5 text-sm gap-2',
+    lg: 'px-6 py-3 text-base gap-2.5',
   };
 
   return (

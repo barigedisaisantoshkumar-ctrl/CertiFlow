@@ -25,7 +25,7 @@ export const Select = forwardRef(({
         ref={ref}
         className={twMerge(
           clsx(
-            'w-full bg-white text-slate-900 text-sm rounded-lg border border-slate-200 px-3.5 py-2.5 transition-all duration-200 cursor-pointer',
+            'w-full bg-white text-slate-900 text-sm rounded-full border border-slate-200 px-4 py-2.5 transition-all duration-200 cursor-pointer',
             'focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10',
             error && 'border-rose-500 focus:border-rose-500 focus:ring-rose-500/10',
             className

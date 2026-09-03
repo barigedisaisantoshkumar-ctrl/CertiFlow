@@ -10,8 +10,6 @@ import {
   ChevronRight,
   ChevronLeft,
   Sparkles,
-  PanelLeftClose,
-  PanelLeftOpen
 } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 
@@ -66,8 +64,8 @@ export function Sidebar() {
         }`}>
           <div className="flex items-center gap-3.5">
             <div className="relative group shrink-0">
-              <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-brand-400 rounded-xl blur-xs opacity-60 group-hover:opacity-100 transition duration-300"></div>
-              <div className="relative w-10 h-10 rounded-xl bg-slate-900 border border-brand-500/40 flex items-center justify-center p-1.5 shadow-lg">
+              <div className="absolute -inset-1 bg-gradient-to-r from-brand-500 to-brand-400 rounded-full blur-xs opacity-60 group-hover:opacity-100 transition duration-300"></div>
+              <div className="relative w-10 h-10 rounded-full bg-slate-900 border border-brand-500/40 flex items-center justify-center p-1.5 shadow-lg">
                 <img src="/favicon.png" alt="CertiFlow Logo" className="w-full h-full object-contain" />
               </div>
             </div>
@@ -86,9 +84,9 @@ export function Sidebar() {
         </div>
 
         {/* Navigation Menu */}
-        <nav className="p-3 space-y-1.5">
+        <nav className="p-3 space-y-2">
           {!isCollapsed && (
-            <div className="px-3 py-2 text-[11px] font-bold text-slate-400 uppercase tracking-widest transition-all duration-300">
+            <div className="px-3 py-1.5 text-[11px] font-bold text-slate-400 uppercase tracking-widest transition-all duration-300">
               Main Menu
             </div>
           )}
@@ -101,11 +99,11 @@ export function Sidebar() {
                 to={item.path}
                 title={isCollapsed ? item.label : undefined}
                 className={({ isActive }) =>
-                  `group relative flex items-center rounded-xl text-sm font-semibold transition-all duration-200 ${
+                  `group relative flex items-center rounded-full text-sm font-semibold transition-all duration-200 ${
                     isCollapsed ? 'justify-center p-3' : 'justify-between px-4 py-3'
                   } ${
                     isActive
-                      ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/30 border border-brand-400/40'
+                      ? 'bg-gradient-to-r from-brand-600 to-brand-500 text-white shadow-lg shadow-brand-500/35 border border-brand-400/40'
                       : 'text-slate-400 hover:bg-slate-900/90 hover:text-white border border-transparent'
                   }`
                 }
@@ -130,7 +128,7 @@ export function Sidebar() {
 
                     {/* Tooltip on Collapsed State */}
                     {isCollapsed && (
-                      <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-lg border border-slate-700 shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap">
+                      <div className="absolute left-full ml-3 px-3 py-1.5 bg-slate-900 text-white text-xs font-bold rounded-full border border-slate-700 shadow-xl opacity-0 pointer-events-none group-hover:opacity-100 transition-opacity duration-200 z-50 whitespace-nowrap">
                         {item.label}
                       </div>
                     )}
@@ -147,11 +145,11 @@ export function Sidebar() {
         {/* User Avatar / Profile Card */}
         <div
           title={isCollapsed ? `${user?.name || 'Admin'} (${user?.email || ''})` : undefined}
-          className={`flex items-center rounded-xl bg-slate-900 border border-slate-800 shadow-inner ${
+          className={`flex items-center rounded-2xl bg-slate-900 border border-slate-800 shadow-inner ${
             isCollapsed ? 'justify-center p-2' : 'gap-3 p-3'
           }`}
         >
-          <div className="w-9 h-9 rounded-lg bg-brand-500/20 text-brand-300 font-bold border border-brand-500/30 flex items-center justify-center text-sm shadow-xs shrink-0">
+          <div className="w-9 h-9 rounded-full bg-brand-500/20 text-brand-300 font-bold border border-brand-500/30 flex items-center justify-center text-sm shadow-xs shrink-0">
             {user?.name ? user.name.charAt(0) : 'A'}
           </div>
 
@@ -167,7 +165,7 @@ export function Sidebar() {
         <button
           onClick={logout}
           title={isCollapsed ? "Sign Out" : undefined}
-          className={`w-full flex items-center text-xs font-bold text-rose-400 hover:text-rose-300 bg-rose-950/20 hover:bg-rose-950/50 rounded-xl transition-all duration-200 border border-rose-900/40 hover:border-rose-800/60 active:scale-[0.98] ${
+          className={`w-full flex items-center text-xs font-bold text-rose-400 hover:text-rose-300 bg-rose-950/20 hover:bg-rose-950/50 rounded-full transition-all duration-200 border border-rose-900/40 hover:border-rose-800/60 active:scale-[0.98] ${
             isCollapsed ? 'justify-center p-2.5' : 'justify-center gap-2 px-3 py-2.5'
           }`}
         >
