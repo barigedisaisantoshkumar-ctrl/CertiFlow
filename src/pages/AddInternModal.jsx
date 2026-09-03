@@ -4,32 +4,47 @@ import { Input } from '../components/ui/Input';
 import { Select } from '../components/ui/Select';
 import { Button } from '../components/ui/Button';
 import { calculateDuration } from '../utils/helpers';
+import { departmentService } from '../services/departmentService';
+import { Plus, Trash2, Settings, Building2 } from 'lucide-react';
 
 export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = null }) {
-  const [formData, setFormData] = useState(
-    initialData || {
-      full_name: '',
-      gender: 'Female',
-      email: '',
-      phone: '',
-      intern_code: 'HPS260038',
-      college: '',
-      course: '',
-      department: 'Software Development',
-      internship_title: 'SDE Intern',
-      duration: '3 Months',
-      start_date: '2026-05-16',
-      end_date: '2026-08-16',
-      supervisor_name: 'Director',
-      supervisor_email: 'director@hps.com',
-    }
-  );
+  const [departments, setDepartments] = useState([]);
+  const [isManageDeptsOpen, setIsManageDeptsOpen] = useState(false);
+  const [newDeptInput, setNewDeptInput] = useState('');
+  const [deptError, setDeptError] = useState('');
+
+  const [formData, setFormData] = useState({
+    full_name: '',
+    gender: 'Female',
+    email: '',
+    phone: '',
+    intern_code: 'HPS260038',
+    college: '',
+    course: '',
+    department: 'Software Development',
+    internship_title: 'SDE Intern',
+    duration: '3 Months',
+    start_date: '2026-05-16',
+    end_date: '2026-08-16',
+    supervisor_name: 'Director',
+    supervisor_email: 'director@hps.com',
+  });
 
   const [errors, setErrors] = useState({});
 
+  const loadDepartments = () => {
+    const list = departmentService.getDepartments();
+    setDepartments(list);
+    return list;
+  };
+
   useEffect(() => {
+    const list = loadDepartments();
     if (initialData) {
-      setFormData(initialData);
+      setFormData({
+        ...initialData,
+        supervisor_name: 'Director'
+      });
     } else {
       setFormData({
         full_name: '',
@@ -39,7 +54,7 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
         intern_code: `HPS26${String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')}`,
         college: '',
         course: '',
-        department: 'Software Development',
+        department: list[0] || 'Software Development',
         internship_title: 'SDE Intern',
         duration: '3 Months',
         start_date: '2026-05-16',
@@ -52,6 +67,11 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    if (name === 'department' && value === 'MANAGE_DEPTS') {
+      setIsManageDeptsOpen(true);
+      return;
+    }
+
     setFormData((prev) => {
       const updated = { ...prev, [name]: value };
       if (name === 'start_date' || name === 'end_date') {
@@ -61,6 +81,32 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
       }
       return updated;
     });
+  };
+
+  const handleAddDepartment = (e) => {
+    e.preventDefault();
+    setDeptError('');
+    try {
+      const updated = departmentService.addDepartment(newDeptInput);
+      setDepartments(updated);
+      setFormData((prev) => ({ ...prev, department: newDeptInput.trim() }));
+      setNewDeptInput('');
+    } catch (err) {
+      setDeptError(err.message);
+    }
+  };
+
+  const handleDeleteDepartment = (deptToDelete) => {
+    setDeptError('');
+    try {
+      const updated = departmentService.deleteDepartment(deptToDelete);
+      setDepartments(updated);
+      if (formData.department === deptToDelete) {
+        setFormData((prev) => ({ ...prev, department: updated[0] || '' }));
+      }
+    } catch (err) {
+      setDeptError(err.message);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -81,150 +127,233 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
       return;
     }
 
-    onAddIntern(formData);
+    // Ensure supervisor_name is fixed to Director
+    onAddIntern({
+      ...formData,
+      supervisor_name: 'Director'
+    });
     onClose();
   };
 
   return (
-    <Modal
-      isOpen={isOpen}
-      onClose={onClose}
-      title={initialData ? 'Edit HPS Intern Details' : 'Add New HPS Intern Record'}
-      maxWidth="max-w-2xl"
-    >
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <Input
-            label="Full Name (for Certificate)"
-            name="full_name"
-            placeholder="e.g. DIPIKA REDDY RAGIPINDI"
-            value={formData.full_name}
-            onChange={handleChange}
-            error={errors.full_name}
-            required
-          />
+    <>
+      <Modal
+        isOpen={isOpen}
+        onClose={onClose}
+        title={initialData ? 'Edit HPS Intern Details' : 'Add New HPS Intern Record'}
+        maxWidth="max-w-2xl"
+      >
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <Input
+              label="Full Name (for Certificate)"
+              name="full_name"
+              placeholder="e.g. DIPIKA REDDY RAGIPINDI"
+              value={formData.full_name}
+              onChange={handleChange}
+              error={errors.full_name}
+              required
+            />
 
-          <Select
-            label="Gender / Pronoun"
-            name="gender"
-            value={formData.gender}
-            onChange={handleChange}
-            required
-            options={[
-              { value: 'Female', label: 'Female (her successful completion...)' },
-              { value: 'Male', label: 'Male (his successful completion...)' },
-              { value: 'Other', label: 'Other / Non-binary (their successful completion...)' },
-            ]}
-          />
+            <Select
+              label="Gender / Pronoun"
+              name="gender"
+              value={formData.gender}
+              onChange={handleChange}
+              required
+              options={[
+                { value: 'Female', label: 'Female (her successful completion...)' },
+                { value: 'Male', label: 'Male (his successful completion...)' },
+                { value: 'Other', label: 'Other / Non-binary (their successful completion...)' },
+              ]}
+            />
 
-          <Input
-            label="EMP ID / Intern Code"
-            name="intern_code"
-            placeholder="e.g. HPS260038"
-            value={formData.intern_code}
-            onChange={handleChange}
-            required
-          />
+            <Input
+              label="EMP ID / Intern Code"
+              name="intern_code"
+              placeholder="e.g. HPS260038"
+              value={formData.intern_code}
+              onChange={handleChange}
+              required
+            />
 
-          <Input
-            label="Email Address"
-            type="email"
-            name="email"
-            placeholder="dipika.reddy@example.com"
-            value={formData.email}
-            onChange={handleChange}
-            error={errors.email}
-            required
-          />
+            <Input
+              label="Email Address"
+              type="email"
+              name="email"
+              placeholder="dipika.reddy@example.com"
+              value={formData.email}
+              onChange={handleChange}
+              error={errors.email}
+              required
+            />
 
-          <Select
-            label="Department"
-            name="department"
-            value={formData.department}
-            onChange={handleChange}
-            error={errors.department}
-            required
-            options={[
-              { value: 'Software Development', label: 'Software Development' },
-              { value: 'Artificial Intelligence', label: 'Artificial Intelligence' },
-              { value: 'UX/UI Design', label: 'UX/UI Design' },
-              { value: 'Product Management', label: 'Product Management' },
-              { value: 'Cloud & DevOps', label: 'Cloud & DevOps' },
-            ]}
-          />
+            {/* Department Select with Dynamic Manage Option */}
+            <div className="flex flex-col gap-1.5">
+              <div className="flex items-center justify-between">
+                <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1">
+                  Department <span className="text-rose-500">*</span>
+                </label>
+                <button
+                  type="button"
+                  onClick={() => setIsManageDeptsOpen(true)}
+                  className="text-[11px] font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 hover:underline"
+                >
+                  <Settings className="w-3 h-3" /> Manage Departments
+                </button>
+              </div>
 
-          <Input
-            label="Role / Internship Title"
-            name="internship_title"
-            placeholder="e.g. SDE Intern / Software Development Engineer"
-            value={formData.internship_title}
-            onChange={handleChange}
-            error={errors.internship_title}
-            required
-          />
+              <select
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                className="w-full bg-white text-slate-900 text-sm rounded-full border border-slate-200 px-4 py-2.5 transition-all duration-200 cursor-pointer focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10"
+              >
+                {departments.map((dept) => (
+                  <option key={dept} value={dept}>
+                    {dept}
+                  </option>
+                ))}
+                <option value="MANAGE_DEPTS">⚙ + Create / Delete Department Options...</option>
+              </select>
+              {errors.department && <span className="text-xs text-rose-500 font-medium">{errors.department}</span>}
+            </div>
 
-          <Input
-            label="Start Date"
-            type="date"
-            name="start_date"
-            value={formData.start_date}
-            onChange={handleChange}
-            error={errors.start_date}
-            required
-          />
+            <Input
+              label="Role / Internship Title"
+              name="internship_title"
+              placeholder="e.g. SDE Intern / Software Development Engineer"
+              value={formData.internship_title}
+              onChange={handleChange}
+              error={errors.internship_title}
+              required
+            />
 
-          <Input
-            label="End Date"
-            type="date"
-            name="end_date"
-            value={formData.end_date}
-            onChange={handleChange}
-            error={errors.end_date}
-            required
-          />
+            <Input
+              label="Start Date"
+              type="date"
+              name="start_date"
+              value={formData.start_date}
+              onChange={handleChange}
+              error={errors.start_date}
+              required
+            />
 
-          <Input
-            label="Internship Duration"
-            name="duration"
-            placeholder="e.g. 3 Months"
-            value={formData.duration}
-            onChange={handleChange}
-          />
+            <Input
+              label="End Date"
+              type="date"
+              name="end_date"
+              value={formData.end_date}
+              onChange={handleChange}
+              error={errors.end_date}
+              required
+            />
 
-          <Input
-            label="Supervisor / Director Title"
-            name="supervisor_name"
-            placeholder="Director"
-            value={formData.supervisor_name}
-            onChange={handleChange}
-          />
+            <Input
+              label="Internship Duration"
+              name="duration"
+              placeholder="e.g. 3 Months"
+              value={formData.duration}
+              onChange={handleChange}
+            />
 
-          <Input
-            label="College / Institution (Optional)"
-            name="college"
-            placeholder="IIT Hyderabad"
-            value={formData.college}
-            onChange={handleChange}
-          />
+            <Input
+              label="College / Institution (Optional)"
+              name="college"
+              placeholder="IIT Hyderabad"
+              value={formData.college}
+              onChange={handleChange}
+            />
 
-          <Input
-            label="Course / Degree (Optional)"
-            name="course"
-            placeholder="B.Tech Computer Science"
-            value={formData.course}
-            onChange={handleChange}
-          />
-        </div>
+            <Input
+              label="Course / Degree (Optional)"
+              name="course"
+              placeholder="B.Tech Computer Science"
+              value={formData.course}
+              onChange={handleChange}
+              containerClassName="sm:col-span-2"
+            />
+          </div>
 
-        <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
-          <Button variant="secondary" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button type="submit" variant="primary">
-            {initialData ? 'Save Changes' : 'Save HPS Intern Record'}
-          </Button>
-        </div>
-      </form>
-    </Modal>
+          <div className="flex justify-end gap-3 pt-4 border-t border-slate-100">
+            <Button variant="secondary" onClick={onClose}>
+              Cancel
+            </Button>
+            <Button type="submit" variant="primary">
+              {initialData ? 'Save Changes' : 'Save HPS Intern Record'}
+            </Button>
+          </div>
+        </form>
+      </Modal>
+
+      {/* HR Department Management Modal */}
+      {isManageDeptsOpen && (
+        <Modal
+          isOpen={isManageDeptsOpen}
+          onClose={() => setIsManageDeptsOpen(false)}
+          title="HR Department Directory Management"
+          maxWidth="max-w-md"
+        >
+          <div className="space-y-4">
+            <p className="text-xs text-slate-500">
+              Add new company departments or remove unused department options for certificate generation.
+            </p>
+
+            {deptError && (
+              <div className="p-3 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold rounded-xl">
+                {deptError}
+              </div>
+            )}
+
+            {/* Add Department Form */}
+            <form onSubmit={handleAddDepartment} className="flex gap-2">
+              <input
+                type="text"
+                placeholder="e.g. Cybersecurity & InfoSec"
+                value={newDeptInput}
+                onChange={(e) => setNewDeptInput(e.target.value)}
+                className="flex-1 bg-white text-slate-900 text-xs rounded-full border border-slate-200 px-3.5 py-2 focus:outline-none focus:border-brand-500"
+              />
+              <Button type="submit" size="sm" variant="primary" icon={Plus}>
+                Add
+              </Button>
+            </form>
+
+            {/* Existing Departments List */}
+            <div className="space-y-2 border-t border-slate-100 pt-3 max-h-60 overflow-y-auto">
+              <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                Active Departments ({departments.length})
+              </span>
+              {departments.map((dept) => (
+                <div
+                  key={dept}
+                  className="flex items-center justify-between p-2.5 bg-slate-50 rounded-xl border border-slate-200/70 text-xs font-semibold text-slate-800"
+                >
+                  <div className="flex items-center gap-2">
+                    <Building2 className="w-3.5 h-3.5 text-brand-500" />
+                    <span>{dept}</span>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => handleDeleteDepartment(dept)}
+                    className="p-1 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors"
+                    title={`Delete ${dept} department`}
+                  >
+                    <Trash2 className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+
+            <div className="flex justify-end pt-2">
+              <Button variant="secondary" size="sm" onClick={() => setIsManageDeptsOpen(false)}>
+                Done
+              </Button>
+            </div>
+          </div>
+        </Modal>
+      )}
+    </>
   );
 }
