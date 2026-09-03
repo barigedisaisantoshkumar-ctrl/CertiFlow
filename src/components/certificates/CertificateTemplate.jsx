@@ -48,7 +48,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
       {/* 3. Top Header with HPS Logo */}
       <div className="flex flex-col items-center justify-center relative z-10 pt-1">
         <img
-          src="hps-template/hps_logo.png"
+          src="/hps-template/hps_logo.png"
           alt="HPS HARSHA PERFECT SOLUTIONS Logo"
           className="h-18 sm:h-20 w-auto object-contain mx-auto"
         />
