@@ -13,6 +13,9 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
   const [newDeptInput, setNewDeptInput] = useState('');
   const [deptError, setDeptError] = useState('');
 
+  // Number portion of EMP ID (after fixed 'HPS' prefix)
+  const [empNumber, setEmpNumber] = useState('260038');
+
   const [formData, setFormData] = useState({
     full_name: '',
     gender: 'Female',
@@ -38,20 +41,34 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
     return list;
   };
 
+  // Helper to extract numbers/code after HPS prefix
+  const extractEmpNumber = (codeStr) => {
+    if (!codeStr) return '';
+    let str = String(codeStr).toUpperCase().trim();
+    if (str.startsWith('HPS')) {
+      return str.slice(3);
+    }
+    return str;
+  };
+
   useEffect(() => {
     const list = loadDepartments();
     if (initialData) {
+      const numPart = extractEmpNumber(initialData.intern_code);
+      setEmpNumber(numPart);
       setFormData({
         ...initialData,
         supervisor_name: 'Director'
       });
     } else {
+      const defaultNum = `${String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')}`;
+      setEmpNumber(`26${defaultNum}`);
       setFormData({
         full_name: '',
         gender: 'Female',
         email: '',
         phone: '',
-        intern_code: `HPS26${String(Math.floor(Math.random() * 900) + 100).padStart(4, '0')}`,
+        intern_code: `HPS26${defaultNum}`,
         college: '',
         course: '',
         department: list[0] || 'Software Development',
@@ -81,6 +98,20 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
       }
       return updated;
     });
+  };
+
+  // Handle manual input for EMP ID number part after HPS prefix
+  const handleEmpNumberChange = (e) => {
+    let rawVal = e.target.value.toUpperCase();
+    // Strip duplicate HPS prefix if typed in input
+    if (rawVal.startsWith('HPS')) {
+      rawVal = rawVal.slice(3);
+    }
+    setEmpNumber(rawVal);
+    setFormData((prev) => ({
+      ...prev,
+      intern_code: `HPS${rawVal}`
+    }));
   };
 
   const handleAddDepartment = (e) => {
@@ -114,6 +145,7 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
     const newErrors = {};
     if (!formData.full_name.trim()) newErrors.full_name = 'Full name is required.';
     if (!formData.email.trim()) newErrors.email = 'Valid email is required.';
+    if (!empNumber.trim()) newErrors.intern_code = 'EMP ID code/number is required.';
     if (!formData.department.trim()) newErrors.department = 'Department is required.';
     if (!formData.internship_title.trim()) newErrors.internship_title = 'Role / Internship title is required.';
     if (!formData.start_date) newErrors.start_date = 'Start date is required.';
@@ -127,9 +159,9 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
       return;
     }
 
-    // Ensure supervisor_name is fixed to Director
     onAddIntern({
       ...formData,
+      intern_code: `HPS${empNumber.trim()}`,
       supervisor_name: 'Director'
     });
     onClose();
@@ -168,14 +200,26 @@ export function AddInternModal({ isOpen, onClose, onAddIntern, initialData = nul
               ]}
             />
 
-            <Input
-              label="EMP ID / Intern Code"
-              name="intern_code"
-              placeholder="e.g. HPS260038"
-              value={formData.intern_code}
-              onChange={handleChange}
-              required
-            />
+            {/* EMP ID Field with Fixed 'HPS' Prefix Pill + Manual Number Add Input */}
+            <div className="flex flex-col gap-1.5">
+              <label className="text-xs font-semibold uppercase tracking-wider text-slate-600 flex items-center gap-1">
+                EMP ID / Intern Code <span className="text-rose-500">*</span>
+              </label>
+              <div className="relative flex items-center">
+                <span className="inline-flex items-center px-4 py-2.5 rounded-l-full border border-r-0 border-slate-200 bg-slate-100 text-slate-700 text-sm font-extrabold font-mono select-none">
+                  HPS
+                </span>
+                <input
+                  type="text"
+                  placeholder="e.g. 260875"
+                  value={empNumber}
+                  onChange={handleEmpNumberChange}
+                  className="w-full bg-white text-slate-900 placeholder:text-slate-400 text-sm font-mono font-bold rounded-r-full border border-slate-200 px-4 py-2.5 transition-all duration-200 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10"
+                  required
+                />
+              </div>
+              {errors.intern_code && <span className="text-xs text-rose-500 font-medium">{errors.intern_code}</span>}
+            </div>
 
             <Input
               label="Email Address"
