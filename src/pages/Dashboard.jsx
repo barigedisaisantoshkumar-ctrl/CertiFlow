@@ -3,6 +3,7 @@ import { AppLayout } from '../components/layout/AppLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
 import { StatusBadge } from '../components/ui/StatusBadge';
+import { AddInternModal } from './AddInternModal';
 import { internService } from '../services/internService';
 import { certificateService } from '../services/certificateService';
 import { calculateInternshipStatus, formatDate } from '../utils/helpers';
@@ -13,24 +14,35 @@ export function Dashboard() {
   const [interns, setInterns] = useState([]);
   const [certificates, setCertificates] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
+
+  const loadData = async () => {
+    try {
+      setLoading(true);
+      const [internsList, certsList] = await Promise.all([
+        internService.getInterns(),
+        certificateService.getCertificates()
+      ]);
+      setInterns(internsList);
+      setCertificates(certsList);
+    } catch (err) {
+      console.error('Failed to load dashboard metrics', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function loadData() {
-      try {
-        const [internsList, certsList] = await Promise.all([
-          internService.getInterns(),
-          certificateService.getCertificates()
-        ]);
-        setInterns(internsList);
-        setCertificates(certsList);
-      } catch (err) {
-        console.error('Failed to load dashboard metrics', err);
-      } finally {
-        setLoading(false);
-      }
-    }
     loadData();
   }, []);
+
+  const handleAddIntern = async (formData) => {
+    await internService.createIntern(formData);
+    setToastMessage(`Successfully added HPS intern ${formData.full_name}`);
+    setTimeout(() => setToastMessage(''), 4000);
+    await loadData();
+  };
 
   // Compute metrics
   const totalInterns = interns.length;
@@ -52,6 +64,14 @@ export function Dashboard() {
   return (
     <AppLayout title="Dashboard Overview">
       <div className="space-y-8">
+        {/* Notification Banner */}
+        {toastMessage && (
+          <div className="p-4 bg-emerald-50 border border-emerald-200 text-emerald-800 text-sm font-semibold rounded-2xl flex items-center gap-2 shadow-sm animate-in fade-in">
+            <ShieldCheck className="w-5 h-5 text-emerald-600 shrink-0" />
+            {toastMessage}
+          </div>
+        )}
+
         {/* Metric Cards Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4">
           {stats.map((stat, i) => {
@@ -81,11 +101,13 @@ export function Dashboard() {
             </p>
           </div>
           <div className="flex items-center gap-3">
-            <Link to="/interns">
-              <Button variant="secondary" icon={Plus}>
-                Add / Manage Interns
-              </Button>
-            </Link>
+            <Button
+              variant="secondary"
+              icon={Plus}
+              onClick={() => setIsAddModalOpen(true)}
+            >
+              Add New Intern
+            </Button>
             <Link to="/certificates">
               <Button variant="outline" className="text-white border-white/40 hover:bg-white/10" icon={Award}>
                 View Issued Certificates
@@ -116,38 +138,53 @@ export function Dashboard() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
-                {interns.slice(0, 5).map((intern) => {
-                  const status = calculateInternshipStatus(intern.start_date, intern.end_date);
-                  return (
-                    <tr key={intern.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-4 py-3.5">
-                        <div className="font-bold text-slate-900">{intern.full_name}</div>
-                        <div className="text-xs text-slate-400 font-mono">{intern.intern_code}</div>
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <div className="font-semibold text-slate-800">{intern.internship_title}</div>
-                        <div className="text-xs text-slate-500">{intern.department}</div>
-                      </td>
-                      <td className="px-4 py-3.5 text-xs">
-                        {formatDate(intern.start_date)} – {formatDate(intern.end_date)}
-                      </td>
-                      <td className="px-4 py-3.5">
-                        <StatusBadge status={status} type="internship" />
-                      </td>
-                      <td className="px-4 py-3.5 text-right">
-                        <Link to="/interns">
-                          <Button variant="secondary" size="sm">
-                            Manage
-                          </Button>
-                        </Link>
-                      </td>
-                    </tr>
-                  );
-                })}
+                {interns.length > 0 ? (
+                  interns.slice(0, 5).map((intern) => {
+                    const status = calculateInternshipStatus(intern.start_date, intern.end_date);
+                    return (
+                      <tr key={intern.id} className="hover:bg-slate-50/60 transition-colors">
+                        <td className="px-4 py-3.5">
+                          <div className="font-bold text-slate-900">{intern.full_name}</div>
+                          <div className="text-xs text-slate-400 font-mono">{intern.intern_code}</div>
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <div className="font-semibold text-slate-800">{intern.internship_title}</div>
+                          <div className="text-xs text-slate-500">{intern.department}</div>
+                        </td>
+                        <td className="px-4 py-3.5 text-xs">
+                          {formatDate(intern.start_date)} – {formatDate(intern.end_date)}
+                        </td>
+                        <td className="px-4 py-3.5">
+                          <StatusBadge status={status} type="internship" />
+                        </td>
+                        <td className="px-4 py-3.5 text-right">
+                          <Link to="/interns">
+                            <Button variant="secondary" size="sm">
+                              Manage
+                            </Button>
+                          </Link>
+                        </td>
+                      </tr>
+                    );
+                  })
+                ) : (
+                  <tr>
+                    <td colSpan={5} className="px-4 py-8 text-center text-slate-400 text-xs font-semibold">
+                      No intern records found. Click "Add New Intern" above to create one.
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>
         </Card>
+
+        {/* Add Intern Modal */}
+        <AddInternModal
+          isOpen={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onAddIntern={handleAddIntern}
+        />
       </div>
     </AppLayout>
   );
