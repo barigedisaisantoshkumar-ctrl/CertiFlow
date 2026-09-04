@@ -6,8 +6,8 @@ import { Button } from '../components/ui/Button';
 import { Mail, Lock, ShieldCheck, ArrowRight } from 'lucide-react';
 
 export function Login() {
-  const [email, setEmail] = useState('admin@certiflow.com');
-  const [password, setPassword] = useState('admin123');
+  const [email, setEmail] = useState('director@thehps.in');
+  const [password, setPassword] = useState('AdminHPS#2026');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { login } = useAuth();
@@ -22,10 +22,15 @@ export function Login() {
     }
     setIsLoading(true);
     setTimeout(() => {
-      login(email, password);
-      setIsLoading(false);
-      navigate('/dashboard');
-    }, 600);
+      try {
+        login(email, password);
+        setIsLoading(false);
+        navigate('/dashboard');
+      } catch (err) {
+        setIsLoading(false);
+        setError(err.message || 'Invalid email or password.');
+      }
+    }, 400);
   };
 
   return (
@@ -60,7 +65,7 @@ export function Login() {
             <Input
               label="Company Email"
               type="email"
-              placeholder="admin@certiflow.com"
+              placeholder="director@thehps.in"
               icon={Mail}
               value={email}
               onChange={(e) => setEmail(e.target.value)}

@@ -8,9 +8,10 @@ import { StatusBadge } from '../components/ui/StatusBadge';
 import { Pagination } from '../components/ui/Pagination';
 import { CertificatePreviewModal } from '../components/certificates/CertificatePreviewModal';
 import { RevokeModal } from './RevokeModal';
+import { RestoreModal } from './RestoreModal';
 import { certificateService } from '../services/certificateService';
 import { formatDate } from '../utils/helpers';
-import { Search, Eye, AlertOctagon, ShieldCheck, ShieldAlert } from 'lucide-react';
+import { Search, Eye, AlertOctagon, ShieldCheck, ShieldAlert, RotateCcw } from 'lucide-react';
 
 export function Certificates() {
   const [certificates, setCertificates] = useState([]);
@@ -18,6 +19,7 @@ export function Certificates() {
   const [statusFilter, setStatusFilter] = useState('ALL');
   const [previewCert, setPreviewCert] = useState(null);
   const [revokeCertTarget, setRevokeCertTarget] = useState(null);
+  const [restoreCertTarget, setRestoreCertTarget] = useState(null);
   const [toastMessage, setToastMessage] = useState('');
 
   // Pagination State
@@ -45,6 +47,12 @@ export function Certificates() {
   const handleRevoke = async (certId, reason) => {
     await certificateService.revokeCertificate(certId, reason);
     showToast('Certificate was successfully revoked.');
+    loadCertificates();
+  };
+
+  const handleRestore = async (certId) => {
+    await certificateService.restoreCertificate(certId);
+    showToast('Certificate was successfully restored to VALID status.');
     loadCertificates();
   };
 
@@ -162,13 +170,22 @@ export function Certificates() {
                             View & Print
                           </Button>
 
-                          {cert.status === 'VALID' && (
+                          {cert.status === 'VALID' ? (
                             <button
                               onClick={() => setRevokeCertTarget(cert)}
                               className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-full transition-colors"
                               title="Revoke Certificate"
                             >
                               <AlertOctagon className="w-4 h-4" />
+                            </button>
+                          ) : (
+                            <button
+                              onClick={() => setRestoreCertTarget(cert)}
+                              className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 border border-emerald-200 rounded-xl transition-all font-bold text-xs flex items-center gap-1.5 shadow-2xs"
+                              title="Restore Certificate back to Valid access"
+                            >
+                              <RotateCcw className="w-3.5 h-3.5 text-emerald-600" />
+                              <span>Make Normal</span>
                             </button>
                           )}
                         </div>
@@ -215,6 +232,15 @@ export function Certificates() {
             onClose={() => setRevokeCertTarget(null)}
             certificate={revokeCertTarget}
             onRevoke={handleRevoke}
+          />
+        )}
+
+        {restoreCertTarget && (
+          <RestoreModal
+            isOpen={!!restoreCertTarget}
+            onClose={() => setRestoreCertTarget(null)}
+            certificate={restoreCertTarget}
+            onRestore={handleRestore}
           />
         )}
       </div>

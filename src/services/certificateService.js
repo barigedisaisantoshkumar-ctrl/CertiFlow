@@ -161,6 +161,61 @@ export const certificateService = {
       );
     }
     return revokedCert;
+  },
+
+  async restoreCertificate(certId) {
+    if (isSupabaseConfigured()) {
+      try {
+        const { data, error } = await supabase
+          .from('certificates')
+          .update({
+            status: 'VALID',
+            revocation_reason: null,
+            revoked_at: null
+          })
+          .eq('id', certId)
+          .select()
+          .single();
+        if (!error && data) {
+          await auditService.logAction(
+            'CERTIFICATE_RESTORED',
+            'CERTIFICATE',
+            data.certificate_number,
+            `Restored revoked certificate back to VALID status`
+          );
+          return data;
+        }
+      } catch (err) {
+        console.warn('Supabase restore failed, updating locally', err);
+      }
+    }
+
+    const list = getStoredCertificates();
+    let restoredCert = null;
+    const updated = list.map((c) => {
+      if (c.id === certId) {
+        restoredCert = {
+          ...c,
+          status: 'VALID',
+          revocation_reason: null,
+          revoked_at: null
+        };
+        return restoredCert;
+      }
+      return c;
+    });
+
+    saveStoredCertificates(updated);
+    if (restoredCert) {
+      await auditService.logAction(
+        'CERTIFICATE_RESTORED',
+        'CERTIFICATE',
+        restoredCert.certificate_number,
+        `Restored revoked certificate back to VALID status`
+      );
+    }
+    return restoredCert;
   }
 };
+
 
