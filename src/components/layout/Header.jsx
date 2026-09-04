@@ -29,15 +29,6 @@ export function Header({ title }) {
           <ExternalLink className="w-3.5 h-3.5" />
           Test Public Verification Page
         </Link>
-
-        {/* System Notifications Badge */}
-        <button
-          title="Notifications"
-          className="p-2 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors relative"
-        >
-          <Bell className="w-5 h-5" />
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-brand-500 ring-2 ring-white"></span>
-        </button>
       </div>
     </header>
   );
