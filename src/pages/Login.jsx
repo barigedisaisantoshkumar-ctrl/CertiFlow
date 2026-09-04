@@ -42,8 +42,8 @@ export function Login() {
       <div className="w-full max-w-md relative z-10">
         {/* Header Branding */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-brand-500 shadow-xl shadow-brand-500/30 mb-4">
-            <img src="/favicon.png" alt="CertiFlow Logo" className="w-9 h-9 object-contain" />
+          <div className="inline-flex items-center justify-center p-3 rounded-2xl bg-white border border-slate-200/90 shadow-xl shadow-slate-200/60 mb-4">
+            <img src="/hps-template/hps_logo.png" alt="HPS HARSHA PERFECT SOLUTIONS Logo" className="h-12 sm:h-14 w-auto object-contain" />
           </div>
           <h1 className="text-3xl font-black tracking-tight text-slate-900">
             Certi<span className="text-brand-500">Flow</span> Admin
