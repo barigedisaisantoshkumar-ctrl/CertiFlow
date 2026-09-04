@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { AppLayout } from '../components/layout/AppLayout';
 import { Card } from '../components/ui/Card';
 import { Button } from '../components/ui/Button';
@@ -6,6 +6,7 @@ import { StatusBadge } from '../components/ui/StatusBadge';
 import { AddInternModal } from './AddInternModal';
 import { internService } from '../services/internService';
 import { certificateService } from '../services/certificateService';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { calculateInternshipStatus, formatDate } from '../utils/helpers';
 import { Users, Award, CheckCircle, ShieldAlert, Plus, ArrowRight, ShieldCheck } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -17,9 +18,9 @@ export function Dashboard() {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
 
-  const loadData = async () => {
+  const loadData = useCallback(async (isSilent = false) => {
     try {
-      setLoading(true);
+      if (!isSilent) setLoading(true);
       const [internsList, certsList] = await Promise.all([
         internService.getInterns(),
         certificateService.getCertificates()
@@ -29,13 +30,61 @@ export function Dashboard() {
     } catch (err) {
       console.error('Failed to load dashboard metrics', err);
     } finally {
-      setLoading(false);
+      if (!isSilent) setLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     loadData();
-  }, []);
+
+    // 1. Storage Event Listener for Cross-Tab Instant Sync
+    const handleStorageChange = (e) => {
+      if (!e.key || e.key === 'certiflow_hps_interns_v3' || e.key === 'certiflow_hps_certificates_v3') {
+        loadData(true);
+      }
+    };
+
+    // 2. Window Focus & Tab Visibility Sync
+    const handleFocus = () => loadData(true);
+    const handleVisibility = () => {
+      if (!document.hidden) loadData(true);
+    };
+
+    // 3. Periodic Background Polling for Multi-Device/Browser Sync
+    const pollInterval = setInterval(() => loadData(true), 4000);
+
+    window.addEventListener('storage', handleStorageChange);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    // 4. Supabase Realtime Subscription if database is configured
+    let channel;
+    if (isSupabaseConfigured()) {
+      try {
+        channel = supabase
+          .channel('realtime-dashboard-sync')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'interns' }, () => loadData(true))
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'certificates' }, () => loadData(true))
+          .subscribe();
+      } catch (err) {
+        console.warn('Realtime channel subscription error', err);
+      }
+    }
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('storage', handleStorageChange);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch (e) {
+          // ignore cleanup errors
+        }
+      }
+    };
+  }, [loadData]);
 
   const handleAddIntern = async (formData) => {
     await internService.createIntern(formData);
@@ -85,7 +134,7 @@ export function Dashboard() {
                   </div>
                 </div>
                 <div className="text-2xl font-black text-slate-900 mt-4 tracking-tight">
-                  {loading ? '...' : stat.value}
+                  {loading && interns.length === 0 ? '...' : stat.value}
                 </div>
               </div>
             );

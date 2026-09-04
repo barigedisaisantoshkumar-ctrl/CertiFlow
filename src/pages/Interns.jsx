@@ -10,6 +10,7 @@ import { AddInternModal } from './AddInternModal';
 import { CertificatePreviewModal } from '../components/certificates/CertificatePreviewModal';
 import { internService } from '../services/internService';
 import { certificateService } from '../services/certificateService';
+import { supabase, isSupabaseConfigured } from '../services/supabase';
 import { calculateInternshipStatus, formatDate } from '../utils/helpers';
 import { Search, Plus, Award, Edit, Trash2, ShieldCheck, Eye, Sparkles } from 'lucide-react';
 
@@ -44,6 +45,48 @@ export function Interns() {
 
   useEffect(() => {
     loadData();
+
+    // Cross-tab, Focus, & Visibility Sync
+    const handleStorage = (e) => {
+      if (!e.key || e.key === 'certiflow_hps_interns_v3' || e.key === 'certiflow_hps_certificates_v3') {
+        loadData();
+      }
+    };
+    const handleFocus = () => loadData();
+    const handleVisibility = () => {
+      if (!document.hidden) loadData();
+    };
+
+    const pollInterval = setInterval(loadData, 4000);
+
+    window.addEventListener('storage', handleStorage);
+    window.addEventListener('focus', handleFocus);
+    document.addEventListener('visibilitychange', handleVisibility);
+
+    let channel;
+    if (isSupabaseConfigured()) {
+      try {
+        channel = supabase
+          .channel('realtime-interns-page')
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'interns' }, () => loadData())
+          .on('postgres_changes', { event: '*', schema: 'public', table: 'certificates' }, () => loadData())
+          .subscribe();
+      } catch (e) {
+        // ignore
+      }
+    }
+
+    return () => {
+      clearInterval(pollInterval);
+      window.removeEventListener('storage', handleStorage);
+      window.removeEventListener('focus', handleFocus);
+      document.removeEventListener('visibilitychange', handleVisibility);
+      if (channel) {
+        try {
+          supabase.removeChannel(channel);
+        } catch (e) {}
+      }
+    };
   }, []);
 
   const showToast = (msg) => {
