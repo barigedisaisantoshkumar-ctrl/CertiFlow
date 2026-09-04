@@ -16,11 +16,34 @@ function ProtectedRoute({ children }) {
   return children;
 }
 
+function PublicOnlyRoute({ children }) {
+  const { isAuthenticated } = useAuth();
+  if (isAuthenticated) {
+    return <Navigate to="/dashboard" replace />;
+  }
+  return children;
+}
+
 export function AppRoutes() {
+  const { isAuthenticated } = useAuth();
+
   return (
     <Routes>
-      {/* Public Routes - No Auth Required */}
-      <Route path="/login" element={<Login />} />
+      {/* Root Path Redirect */}
+      <Route
+        path="/"
+        element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />}
+      />
+
+      {/* Public Routes */}
+      <Route
+        path="/login"
+        element={
+          <PublicOnlyRoute>
+            <Login />
+          </PublicOnlyRoute>
+        }
+      />
       <Route path="/verify/:token" element={<VerifyCertificate />} />
 
       {/* Protected Admin Routes */}
@@ -57,8 +80,11 @@ export function AppRoutes() {
         }
       />
 
-      {/* Fallback Redirect */}
-      <Route path="*" element={<Navigate to="/dashboard" replace />} />
+      {/* Fallback Catch-All Redirect */}
+      <Route
+        path="*"
+        element={<Navigate to={isAuthenticated ? '/dashboard' : '/login'} replace />}
+      />
     </Routes>
   );
 }

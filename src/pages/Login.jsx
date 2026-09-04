@@ -3,19 +3,20 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { Input } from '../components/ui/Input';
 import { Button } from '../components/ui/Button';
-import { Mail, Lock, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Mail, Lock, ShieldCheck, ArrowRight, AlertTriangle } from 'lucide-react';
 
 export function Login() {
   const [email, setEmail] = useState('director@thehps.in');
   const [password, setPassword] = useState('AdminHPS#2026');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
-  const { login } = useAuth();
+  const { login, sessionNotice, clearSessionNotice } = useAuth();
   const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
     setError('');
+    if (clearSessionNotice) clearSessionNotice();
     if (!email || !password) {
       setError('Please provide email and password.');
       return;
@@ -56,6 +57,13 @@ export function Login() {
         {/* Login Form Container */}
         <div className="bg-white border border-slate-200/90 rounded-2xl p-8 shadow-xl shadow-slate-200/40">
           <form onSubmit={handleSubmit} className="space-y-5">
+            {sessionNotice && (
+              <div className="p-3.5 bg-amber-50 border border-amber-200 text-amber-800 text-xs font-semibold rounded-xl flex items-center gap-2">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0" />
+                <span>{sessionNotice}</span>
+              </div>
+            )}
+
             {error && (
               <div className="p-3.5 bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold rounded-xl">
                 {error}
