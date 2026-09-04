@@ -6,8 +6,8 @@ import { Button } from '../components/ui/Button';
 import { Mail, Lock, ShieldCheck, ArrowRight, AlertTriangle } from 'lucide-react';
 
 export function Login() {
-  const [email, setEmail] = useState('director@thehps.in');
-  const [password, setPassword] = useState('AdminHPS#2026');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState('');
   const { login, sessionNotice, clearSessionNotice } = useAuth();
@@ -18,7 +18,7 @@ export function Login() {
     setError('');
     if (clearSessionNotice) clearSessionNotice();
     if (!email || !password) {
-      setError('Please provide email and password.');
+      setError('Please provide company email and password.');
       return;
     }
     setIsLoading(true);
@@ -73,7 +73,7 @@ export function Login() {
             <Input
               label="Company Email"
               type="email"
-              placeholder="director@thehps.in"
+              placeholder="Enter company email (e.g. director@thehps.in)"
               icon={Mail}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -83,7 +83,7 @@ export function Login() {
             <Input
               label="Password"
               type="password"
-              placeholder="••••••••"
+              placeholder="Enter password"
               icon={Lock}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
