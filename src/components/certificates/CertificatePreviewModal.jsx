@@ -2,6 +2,7 @@ import React, { useRef, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { CertificateTemplate } from './CertificateTemplate';
+import { ResponsiveCertificateViewer } from './ResponsiveCertificateViewer';
 import { Download, Printer, ExternalLink } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
@@ -45,17 +46,15 @@ export function CertificatePreviewModal({ isOpen, onClose, certificate, intern }
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Certificate Preview & Verification" maxWidth="max-w-4xl">
       <div className="space-y-5">
-        {/* Crisp High-Res Certificate Container */}
-        <div className="overflow-x-auto p-1 sm:p-2">
-          <div className="min-w-[700px] md:min-w-0 mx-auto">
-            <CertificateTemplate
-              innerRef={certRef}
-              certificate={certificate}
-              intern={intern}
-              verificationUrl={verificationUrl}
-            />
-          </div>
-        </div>
+        {/* Crisp High-Res Responsive Certificate Container */}
+        <ResponsiveCertificateViewer baseWidth={850} baseHeight={601}>
+          <CertificateTemplate
+            innerRef={certRef}
+            certificate={certificate}
+            intern={intern}
+            verificationUrl={verificationUrl}
+          />
+        </ResponsiveCertificateViewer>
 
         {/* Action Controls */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3 pt-3 border-t border-slate-100">

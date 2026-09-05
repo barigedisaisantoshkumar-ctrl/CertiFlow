@@ -17,8 +17,10 @@ import {
   ChevronUp
 } from 'lucide-react';
 import { CertificateTemplate } from '../components/certificates/CertificateTemplate';
+import { ResponsiveCertificateViewer } from '../components/certificates/ResponsiveCertificateViewer';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
+
 
 export function VerifyCertificate() {
   const { token } = useParams();
@@ -244,18 +246,16 @@ export function VerifyCertificate() {
                 </button>
               </div>
 
-              {/* Full Crisp Desktop-Quality Certificate Document */}
+              {/* Full Crisp Responsive Certificate Document */}
               {showFullCertificate && (
                 <div className="pt-3 border-t border-slate-100 animate-in fade-in pb-6">
-                  <div className="overflow-x-auto p-1 sm:p-2">
-                    <div className="min-w-[700px] md:min-w-0 mx-auto">
-                      <CertificateTemplate
-                        innerRef={certRef}
-                        certificate={certificate}
-                        verificationUrl={window.location.href}
-                      />
-                    </div>
-                  </div>
+                  <ResponsiveCertificateViewer baseWidth={850} baseHeight={601}>
+                    <CertificateTemplate
+                      innerRef={certRef}
+                      certificate={certificate}
+                      verificationUrl={window.location.href}
+                    />
+                  </ResponsiveCertificateViewer>
                 </div>
               )}
             </div>
