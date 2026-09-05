@@ -3,9 +3,8 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { CertificateTemplate } from './CertificateTemplate';
 import { ResponsiveCertificateViewer } from './ResponsiveCertificateViewer';
+import { downloadCertificatePdf } from '../../utils/pdfHelper';
 import { Download, Printer, ExternalLink } from 'lucide-react';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
 
 export function CertificatePreviewModal({ isOpen, onClose, certificate, intern }) {
   const certRef = useRef(null);
@@ -17,20 +16,8 @@ export function CertificatePreviewModal({ isOpen, onClose, certificate, intern }
     if (!certRef.current) return;
     try {
       setIsGenerating(true);
-      const canvas = await html2canvas(certRef.current, {
-        scale: 3,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#FFFFFF',
-      });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width, canvas.height],
-      });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`${certificate?.certificate_number?.replace(/\//g, '_') || 'Certificate'}.pdf`);
+      const fileName = `${certificate?.certificate_number?.replace(/\//g, '_') || 'Certificate'}.pdf`;
+      await downloadCertificatePdf(certRef.current, fileName);
     } catch (err) {
       console.error('Failed to generate PDF', err);
       alert('Could not download PDF. Please try again.');

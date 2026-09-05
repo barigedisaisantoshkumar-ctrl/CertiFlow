@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
 import { certificateService } from '../services/certificateService';
 import { formatDate } from '../utils/helpers';
+import { downloadCertificatePdf } from '../utils/pdfHelper';
 import { 
   ShieldCheck, 
   ShieldAlert, 
@@ -12,15 +13,11 @@ import {
   Download,
   ExternalLink,
   CheckCircle2,
-  Lock,
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
 import { CertificateTemplate } from '../components/certificates/CertificateTemplate';
 import { ResponsiveCertificateViewer } from '../components/certificates/ResponsiveCertificateViewer';
-import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-
 
 export function VerifyCertificate() {
   const { token } = useParams();
@@ -53,20 +50,8 @@ export function VerifyCertificate() {
     if (!certRef.current) return;
     try {
       setIsGeneratingPdf(true);
-      const canvas = await html2canvas(certRef.current, {
-        scale: 3,
-        useCORS: true,
-        logging: false,
-        backgroundColor: '#FFFFFF',
-      });
-      const imgData = canvas.toDataURL('image/png');
-      const pdf = new jsPDF({
-        orientation: 'landscape',
-        unit: 'px',
-        format: [canvas.width, canvas.height],
-      });
-      pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
-      pdf.save(`${certificate?.certificate_number?.replace(/\//g, '_') || 'HPS_Verified_Certificate'}.pdf`);
+      const fileName = `${certificate?.certificate_number?.replace(/\//g, '_') || 'HPS_Verified_Certificate'}.pdf`;
+      await downloadCertificatePdf(certRef.current, fileName);
     } catch (err) {
       console.error('Download error', err);
       alert('Could not generate PDF. Please try again.');
@@ -92,14 +77,6 @@ export function VerifyCertificate() {
             </span>
           </div>
         </div>
-
-        <Link
-          to="/login"
-          className="text-xs font-bold text-slate-600 hover:text-brand-600 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-brand-200 bg-white transition-all shadow-xs flex items-center gap-1.5 shrink-0"
-        >
-          <Lock className="w-3.5 h-3.5 text-slate-400" />
-          <span>Login</span>
-        </Link>
       </header>
 
       {/* Main Verification Container */}
