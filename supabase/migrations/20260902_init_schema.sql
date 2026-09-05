@@ -72,27 +72,47 @@ ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Interns Policies: Public read for certificate verification joins, authenticated access for management
-CREATE POLICY "Anyone can view interns for verification"
+-- Drop existing policies if any
+DROP POLICY IF EXISTS "Authenticated users can select interns" ON interns;
+DROP POLICY IF EXISTS "Authenticated users can insert/update interns" ON interns;
+DROP POLICY IF EXISTS "Anyone can view interns for verification" ON interns;
+DROP POLICY IF EXISTS "Anyone can view interns" ON interns;
+DROP POLICY IF EXISTS "Anyone can insert and manage interns" ON interns;
+
+DROP POLICY IF EXISTS "Anyone can view valid/revoked certificate for verification" ON certificates;
+DROP POLICY IF EXISTS "Authenticated users can generate and manage certificates" ON certificates;
+DROP POLICY IF EXISTS "Anyone can view certificates" ON certificates;
+DROP POLICY IF EXISTS "Anyone can insert and manage certificates" ON certificates;
+
+DROP POLICY IF EXISTS "Authenticated users can read templates" ON templates;
+DROP POLICY IF EXISTS "Anyone can read templates" ON templates;
+
+DROP POLICY IF EXISTS "Authenticated users can view audit logs" ON audit_logs;
+DROP POLICY IF EXISTS "Authenticated users can insert audit logs" ON audit_logs;
+DROP POLICY IF EXISTS "Anyone can view audit logs" ON audit_logs;
+DROP POLICY IF EXISTS "Anyone can insert audit logs" ON audit_logs;
+
+-- Interns Policies: Full access for web application operations
+CREATE POLICY "Anyone can view interns"
     ON interns FOR SELECT TO anon, authenticated USING (true);
 
-CREATE POLICY "Authenticated users can insert/update interns"
-    ON interns FOR ALL TO authenticated USING (true);
+CREATE POLICY "Anyone can insert and manage interns"
+    ON interns FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 
--- Certificates Policies: Public read for verification token, authenticated access for management
-CREATE POLICY "Anyone can view valid/revoked certificate for verification"
+-- Certificates Policies: Full access for verification and generation
+CREATE POLICY "Anyone can view certificates"
     ON certificates FOR SELECT TO anon, authenticated USING (true);
 
-CREATE POLICY "Authenticated users can generate and manage certificates"
-    ON certificates FOR ALL TO authenticated USING (true);
+CREATE POLICY "Anyone can insert and manage certificates"
+    ON certificates FOR ALL TO anon, authenticated USING (true) WITH CHECK (true);
 
--- Templates Policies: Authenticated read
-CREATE POLICY "Authenticated users can read templates"
-    ON templates FOR SELECT TO authenticated USING (true);
+-- Templates Policies: Read access
+CREATE POLICY "Anyone can read templates"
+    ON templates FOR SELECT TO anon, authenticated USING (true);
 
--- Audit Logs Policies: Authenticated read/insert
-CREATE POLICY "Authenticated users can view audit logs"
-    ON audit_logs FOR SELECT TO authenticated USING (true);
+-- Audit Logs Policies: Read and insert access
+CREATE POLICY "Anyone can view audit logs"
+    ON audit_logs FOR SELECT TO anon, authenticated USING (true);
 
-CREATE POLICY "Authenticated users can insert audit logs"
-    ON audit_logs FOR INSERT TO authenticated WITH CHECK (true);
+CREATE POLICY "Anyone can insert audit logs"
+    ON audit_logs FOR INSERT TO anon, authenticated WITH CHECK (true);
