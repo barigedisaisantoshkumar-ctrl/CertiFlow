@@ -91,15 +91,15 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
 
         {/* Dynamic Period & Duration Box */}
         <div className="pt-2">
-          <div className="inline-flex items-center gap-3 border border-[#94A3B8] px-5 py-1.5 rounded-xs bg-white text-xs font-semibold text-slate-800 shadow-2xs">
-            <div>
+          <div className="inline-flex items-center gap-3 border border-[#94A3B8] px-5 py-1.5 rounded-xs bg-white text-xs font-semibold text-slate-800 shadow-2xs whitespace-nowrap">
+            <div className="whitespace-nowrap">
               <span className="text-[#2C91E3] font-bold">Internship Period: </span>
-              <span className="font-bold text-slate-900">{startDate} to {endDate}</span>
+              <span className="font-bold text-slate-900 whitespace-nowrap">{startDate} to {endDate}</span>
             </div>
             <span className="text-slate-400">|</span>
-            <div>
+            <div className="whitespace-nowrap">
               <span className="text-[#2C91E3] font-bold">Duration: </span>
-              <span className="font-bold text-slate-900">{duration}</span>
+              <span className="font-bold text-slate-900 whitespace-nowrap">{duration}</span>
             </div>
           </div>
         </div>
