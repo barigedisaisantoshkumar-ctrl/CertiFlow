@@ -30,7 +30,11 @@ export function VerifyCertificate() {
     async function verifyToken() {
       setLoading(true);
       try {
-        const cert = await certificateService.getCertificateByToken(token);
+        let cleanToken = token ? decodeURIComponent(token).trim() : '';
+        if (cleanToken.includes('/verify/')) {
+          cleanToken = cleanToken.split('/verify/').pop().trim();
+        }
+        const cert = await certificateService.getCertificateByToken(cleanToken);
         setCertificate(cert);
       } catch (err) {
         console.error('Error verifying certificate token', err);

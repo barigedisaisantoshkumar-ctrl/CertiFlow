@@ -1,5 +1,6 @@
 import { INITIAL_INTERNS } from './mockData';
 import { supabase, isSupabaseConfigured } from './supabase';
+import { toUuid } from '../utils/helpers';
 
 const STORAGE_KEY = 'certiflow_hps_interns_v3';
 
@@ -62,8 +63,9 @@ export const internService = {
   async createIntern(internData) {
     const list = getStoredInterns();
     const nextCounter = list.length + 38;
+    const internId = typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : toUuid('int-' + Date.now());
     const newIntern = {
-      id: 'int-' + Date.now(),
+      id: internId,
       intern_code: internData.intern_code || `HPS26${String(nextCounter).padStart(4, '0')}`,
       full_name: internData.full_name || '',
       gender: internData.gender || 'Female',
@@ -87,7 +89,11 @@ export const internService = {
 
     if (isSupabaseConfigured()) {
       try {
-        const { data, error } = await supabase.from('interns').insert([newIntern]).select().single();
+        const dbPayload = {
+          ...newIntern,
+          id: toUuid(newIntern.id),
+        };
+        const { data, error } = await supabase.from('interns').insert([dbPayload]).select().single();
         if (!error && data) {
           const syncedList = [data, ...list.filter((i) => i.id !== data.id && i.id !== newIntern.id)];
           saveStoredInterns(syncedList);

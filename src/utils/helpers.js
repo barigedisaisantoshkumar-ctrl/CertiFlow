@@ -84,6 +84,25 @@ export function generateVerificationToken() {
   return 'hps-' + Math.random().toString(36).substring(2, 10) + '-' + Date.now().toString(36);
 }
 
+// Convert any string identifier (like 'int-101', 'cert-001') to a valid PostgreSQL UUID format
+export function toUuid(str) {
+  if (!str) {
+    return typeof crypto !== 'undefined' && crypto.randomUUID
+      ? crypto.randomUUID()
+      : '00000000-0000-4000-8000-000000000000';
+  }
+  const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+  if (uuidRegex.test(str)) {
+    return str;
+  }
+  const cleanHex = Array.from(String(str))
+    .map((c) => c.charCodeAt(0).toString(16))
+    .join('')
+    .slice(0, 32)
+    .padEnd(32, '0');
+  return `${cleanHex.slice(0, 8)}-${cleanHex.slice(8, 12)}-4${cleanHex.slice(13, 16)}-8${cleanHex.slice(17, 20)}-${cleanHex.slice(20, 32)}`;
+}
+
 // Get pronoun based on gender (her / his / their)
 export function getPronoun(gender) {
   if (!gender) return 'her/his';
@@ -92,3 +111,4 @@ export function getPronoun(gender) {
   if (g.includes('male') || g.includes('his')) return 'his';
   return 'their';
 }
+
