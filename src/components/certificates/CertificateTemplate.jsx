@@ -72,13 +72,12 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
           This internship program certificate is proudly awarded to
         </p>
 
-        {/* Dynamic Recipient Name & Attached Underline */}
+        {/* Dynamic Recipient Name & Underline */}
         <div className="py-1">
-          <div className="inline-block border-b-[1.5px] border-[#2C91E3] pb-1.5 px-6 mx-auto">
-            <h2 className="text-4xl font-extrabold text-[#0A2540] tracking-wider uppercase font-serif leading-none">
-              {name}
-            </h2>
-          </div>
+          <h2 className="text-4xl font-extrabold text-[#0A2540] tracking-wider uppercase font-serif">
+            {name}
+          </h2>
+          <div className="w-80 h-[1.5px] bg-[#2C91E3] mx-auto mt-2"></div>
         </div>
 
         {/* Dynamic Body Paragraph */}

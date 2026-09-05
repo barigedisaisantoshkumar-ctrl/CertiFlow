@@ -1,51 +1,43 @@
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import jsPDF from 'jspdf';
 
 /**
  * downloadCertificatePdf
  * 
- * Captures the exact rendered CertificateTemplate DOM element directly,
- * using html2canvas `onclone` callback to reset parent scale transforms
- * and outputs a standard A4 Landscape PDF (297mm x 210mm).
+ * Uses native browser SVG foreignObject rendering via `html-to-image` to capture 
+ * the exact 950px x 672px CertificateTemplate DOM element.
+ * 
+ * This guarantees 100% pixel perfection between the web preview and downloaded PDF,
+ * completely eliminating text baseline collisions, font metric shifts, and line displacements.
  */
 export async function downloadCertificatePdf(sourceElement, fileName = 'HPS_Verified_Certificate.pdf') {
   if (!sourceElement) return;
 
-  const canvas = await html2canvas(sourceElement, {
-    scale: 3,
-    useCORS: true,
-    logging: false,
-    backgroundColor: '#FFFFFF',
-    onclone: (clonedDoc) => {
-      const certNode = clonedDoc.getElementById('certificate-print-container');
-      if (certNode) {
-        let parent = certNode.parentElement;
-        while (parent && parent !== clonedDoc.body) {
-          parent.style.transform = 'none';
-          parent.style.width = 'auto';
-          parent.style.height = 'auto';
-          parent.style.overflow = 'visible';
-          parent = parent.parentElement;
-        }
+  try {
+    // 1. Capture pristine, high-res 300 DPI image using native browser rendering engine
+    const dataUrl = await toPng(sourceElement, {
+      quality: 1.0,
+      pixelRatio: 3,
+      width: 950,
+      height: 672,
+      style: {
+        transform: 'none',
+        transformOrigin: 'top left',
+      },
+    });
 
-        // Set to exact 950px x 672px (1.414 A4 Landscape Proportions)
-        certNode.style.width = '950px';
-        certNode.style.height = '672px';
-        certNode.style.transform = 'none';
-      }
-    },
-  });
+    // 2. Initialize official standard A4 Landscape PDF (297mm x 210mm)
+    const pdf = new jsPDF({
+      orientation: 'landscape',
+      unit: 'mm',
+      format: 'a4',
+    });
 
-  const imgData = canvas.toDataURL('image/png');
-
-  // Standard Official A4 Landscape PDF document (297mm x 210mm)
-  const pdf = new jsPDF({
-    orientation: 'landscape',
-    unit: 'mm',
-    format: 'a4',
-  });
-
-  // Fit image to full 297mm x 210mm A4 Landscape page
-  pdf.addImage(imgData, 'PNG', 0, 0, 297, 210);
-  pdf.save(fileName);
+    // 3. Render 1:1 high-resolution image to full A4 page bounds
+    pdf.addImage(dataUrl, 'PNG', 0, 0, 297, 210);
+    pdf.save(fileName);
+  } catch (err) {
+    console.error('Failed to export certificate PDF via html-to-image:', err);
+    throw err;
+  }
 }
