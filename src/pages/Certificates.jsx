@@ -159,13 +159,14 @@ export function Certificates() {
                           </div>
                         )}
                       </td>
-                      <td className="px-5 py-4 text-right">
-                        <div className="flex items-center justify-end gap-2">
+                      <td className="px-5 py-4 text-right whitespace-nowrap">
+                        <div className="flex items-center justify-end gap-2 whitespace-nowrap">
                           <Button
                             variant="secondary"
                             size="sm"
                             icon={Eye}
                             onClick={() => setPreviewCert(cert)}
+                            className="whitespace-nowrap"
                           >
                             View & Print
                           </Button>
@@ -173,7 +174,7 @@ export function Certificates() {
                           {cert.status === 'VALID' ? (
                             <button
                               onClick={() => setRevokeCertTarget(cert)}
-                              className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-full transition-colors"
+                              className="p-2 text-rose-500 hover:text-rose-700 hover:bg-rose-50 rounded-xl transition-colors shrink-0"
                               title="Revoke Certificate"
                             >
                               <AlertOctagon className="w-4 h-4" />
@@ -181,7 +182,7 @@ export function Certificates() {
                           ) : (
                             <button
                               onClick={() => setRestoreCertTarget(cert)}
-                              className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 border border-emerald-200 rounded-xl transition-all font-bold text-xs flex items-center gap-1.5 shadow-2xs"
+                              className="px-3 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 hover:text-emerald-800 border border-emerald-200 rounded-xl transition-all font-bold text-xs flex items-center gap-1.5 shadow-2xs whitespace-nowrap shrink-0"
                               title="Restore Certificate back to Valid access"
                             >
                               <RotateCcw className="w-3.5 h-3.5 text-emerald-600" />

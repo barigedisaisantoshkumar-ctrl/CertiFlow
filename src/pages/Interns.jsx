@@ -230,7 +230,7 @@ export function Interns() {
                   <th className="px-5 py-4">Period & Duration</th>
                   <th className="px-5 py-4">Status</th>
                   <th className="px-5 py-4">HPS Certificate</th>
-                  <th className="px-5 py-4 text-right">Actions</th>
+                  <th className="px-5 py-4 text-right whitespace-nowrap">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-100 bg-white">
@@ -246,45 +246,46 @@ export function Interns() {
                           <div className="text-xs font-mono text-brand-600 font-bold mt-0.5">{intern.intern_code}</div>
                           <div className="text-[11px] text-slate-400">{intern.email}</div>
                         </td>
-                        <td className="px-5 py-4 text-xs font-semibold text-slate-700">
+                        <td className="px-5 py-4 text-xs font-semibold text-slate-700 whitespace-nowrap">
                           {intern.gender || 'Female'}
                         </td>
                         <td className="px-5 py-4">
                           <div className="font-bold text-slate-800">{intern.internship_title}</div>
                           <div className="text-xs text-slate-500">{intern.department}</div>
                         </td>
-                        <td className="px-5 py-4 text-xs font-medium text-slate-600">
+                        <td className="px-5 py-4 text-xs font-medium text-slate-600 whitespace-nowrap">
                           <div>{formatDate(intern.start_date, 'DD-MM-YYYY')} to {formatDate(intern.end_date, 'DD-MM-YYYY')}</div>
                           <div className="text-brand-600 font-bold mt-0.5">{intern.duration || '3 Months'}</div>
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-4 whitespace-nowrap">
                           <StatusBadge status={status} type="internship" />
                         </td>
-                        <td className="px-5 py-4">
+                        <td className="px-5 py-4 whitespace-nowrap">
                           {validCert ? (
                             <button
                               onClick={() => handleViewCertificate(intern, validCert)}
-                              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-full transition-all shadow-2xs"
+                              className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1 rounded-full transition-all shadow-2xs whitespace-nowrap shrink-0"
                             >
                               <ShieldCheck className="w-3.5 h-3.5" />
-                              {validCert.certificate_number}
+                              <span>{validCert.certificate_number}</span>
                             </button>
                           ) : status === 'COMPLETED' ? (
-                            <span className="text-xs text-amber-700 font-semibold bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200">
+                            <span className="text-xs text-amber-700 font-semibold bg-amber-50 px-2.5 py-1 rounded-full border border-amber-200 whitespace-nowrap">
                               Eligible for HPS Certificate
                             </span>
                           ) : (
-                            <span className="text-xs text-slate-400 font-medium">In Progress</span>
+                            <span className="text-xs text-slate-400 font-medium whitespace-nowrap">In Progress</span>
                           )}
                         </td>
-                        <td className="px-5 py-4 text-right">
-                          <div className="flex items-center justify-end gap-1.5">
+                        <td className="px-5 py-4 text-right whitespace-nowrap">
+                          <div className="flex items-center justify-end gap-1.5 whitespace-nowrap">
                             {validCert ? (
                               <Button
                                 variant="secondary"
                                 size="sm"
                                 icon={Eye}
                                 onClick={() => handleViewCertificate(intern, validCert)}
+                                className="whitespace-nowrap"
                               >
                                 View Cert
                               </Button>
@@ -296,6 +297,7 @@ export function Interns() {
                                 disabled={status !== 'COMPLETED'}
                                 isLoading={isGeneratingCertId === intern.id}
                                 onClick={() => handleGenerateCertificate(intern)}
+                                className="whitespace-nowrap"
                               >
                                 Generate Cert
                               </Button>
@@ -306,7 +308,7 @@ export function Interns() {
                                 setEditingIntern(intern);
                                 setIsAddModalOpen(true);
                               }}
-                              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-full transition-colors"
+                              className="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-xl transition-colors shrink-0"
                               title="Edit Intern"
                             >
                               <Edit className="w-4 h-4" />
@@ -314,7 +316,7 @@ export function Interns() {
 
                             <button
                               onClick={() => handleDeleteIntern(intern.id, intern.full_name)}
-                              className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-full transition-colors"
+                              className="p-2 text-rose-400 hover:text-rose-600 hover:bg-rose-50 rounded-xl transition-colors shrink-0"
                               title="Delete Record"
                             >
                               <Trash2 className="w-4 h-4" />

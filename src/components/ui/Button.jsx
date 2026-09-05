@@ -13,7 +13,7 @@ export function Button({
   icon: Icon,
   ...props
 }) {
-  const baseStyles = 'inline-flex items-center justify-center font-semibold transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-full shadow-sm';
+  const baseStyles = 'inline-flex items-center justify-center font-semibold whitespace-nowrap shrink-0 transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-xl shadow-xs';
   
   const variants = {
     primary: 'bg-brand-500 text-white hover:bg-brand-600 focus:ring-brand-500 shadow-brand-500/20 shadow-md hover:shadow-lg active:bg-brand-700 active:scale-[0.98]',
