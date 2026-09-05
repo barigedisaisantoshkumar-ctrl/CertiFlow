@@ -1,6 +1,6 @@
 import { INITIAL_AUDIT_LOGS } from './mockData';
 
-const STORAGE_KEY = 'certiflow_audit_logs';
+const STORAGE_KEY = 'certiflow_hps_audit_logs_v4';
 
 const getStoredAuditLogs = () => {
   const data = localStorage.getItem(STORAGE_KEY);

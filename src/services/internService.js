@@ -2,7 +2,7 @@ import { INITIAL_INTERNS } from './mockData';
 import { supabase, isSupabaseConfigured } from './supabase';
 import { toUuid } from '../utils/helpers';
 
-const STORAGE_KEY = 'certiflow_hps_interns_v3';
+const STORAGE_KEY = 'certiflow_hps_interns_v4';
 
 const getStoredInterns = () => {
   try {

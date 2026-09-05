@@ -3,7 +3,7 @@ import { supabase, isSupabaseConfigured } from './supabase';
 import { generateCertificateId, generateVerificationToken, generateEmpId, calculateDuration, toUuid } from '../utils/helpers';
 import { auditService } from './auditService';
 
-const STORAGE_KEY = 'certiflow_hps_certificates_v3';
+const STORAGE_KEY = 'certiflow_hps_certificates_v4';
 
 const getStoredCertificates = () => {
   try {
