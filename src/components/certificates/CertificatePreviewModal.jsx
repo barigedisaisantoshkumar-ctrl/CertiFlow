@@ -1,66 +1,10 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState } from 'react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { CertificateTemplate } from './CertificateTemplate';
 import { Download, Printer, ExternalLink } from 'lucide-react';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-
-function ResponsiveModalCertificateViewer({ certificate, intern, verificationUrl, innerRef }) {
-  const containerRef = useRef(null);
-  const [scale, setScale] = useState(1);
-  const BASE_WIDTH = 850;
-  const BASE_HEIGHT = 665;
-
-  useEffect(() => {
-    const updateScale = () => {
-      if (containerRef.current) {
-        const availableWidth = containerRef.current.clientWidth;
-        if (availableWidth < BASE_WIDTH) {
-          setScale(availableWidth / BASE_WIDTH);
-        } else {
-          setScale(1);
-        }
-      }
-    };
-
-    updateScale();
-    window.addEventListener('resize', updateScale);
-    return () => window.removeEventListener('resize', updateScale);
-  }, []);
-
-  return (
-    <div ref={containerRef} className="w-full flex justify-center overflow-hidden py-1">
-      <div
-        style={{
-          width: `${BASE_WIDTH * scale}px`,
-          height: `${BASE_HEIGHT * scale}px`,
-          position: 'relative',
-        }}
-        className="transition-all duration-150 ease-out mx-auto rounded-xl shadow-md border border-slate-300 overflow-hidden"
-      >
-        <div
-          style={{
-            width: `${BASE_WIDTH}px`,
-            height: `${BASE_HEIGHT}px`,
-            transform: `scale(${scale})`,
-            transformOrigin: 'top left',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-          }}
-        >
-          <CertificateTemplate
-            innerRef={innerRef}
-            certificate={certificate}
-            intern={intern}
-            verificationUrl={verificationUrl}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function CertificatePreviewModal({ isOpen, onClose, certificate, intern }) {
   const certRef = useRef(null);
@@ -101,14 +45,16 @@ export function CertificatePreviewModal({ isOpen, onClose, certificate, intern }
   return (
     <Modal isOpen={isOpen} onClose={onClose} title="Certificate Preview & Verification" maxWidth="max-w-4xl">
       <div className="space-y-5">
-        {/* Responsive Scaled Certificate Container (Full Height Guaranteed) */}
-        <div className="bg-slate-100/90 p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-inner overflow-hidden">
-          <ResponsiveModalCertificateViewer
-            innerRef={certRef}
-            certificate={certificate}
-            intern={intern}
-            verificationUrl={verificationUrl}
-          />
+        {/* Crisp High-Res Certificate Container */}
+        <div className="overflow-x-auto p-1 sm:p-2">
+          <div className="min-w-[700px] md:min-w-0 mx-auto">
+            <CertificateTemplate
+              innerRef={certRef}
+              certificate={certificate}
+              intern={intern}
+              verificationUrl={verificationUrl}
+            />
+          </div>
         </div>
 
         {/* Action Controls */}

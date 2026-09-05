@@ -9,7 +9,6 @@ import {
   Calendar, 
   Building2, 
   Award, 
-  UserCheck,
   Download,
   ExternalLink,
   CheckCircle2,
@@ -20,62 +19,6 @@ import {
 import { CertificateTemplate } from '../components/certificates/CertificateTemplate';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
-
-// Responsive Scaled Certificate Container for Mobile & Desktop
-function ResponsiveCertificateViewer({ certificate, verificationUrl, innerRef }) {
-  const containerRef = useRef(null);
-  const [scale, setScale] = useState(1);
-  const BASE_WIDTH = 850;
-  const BASE_HEIGHT = 600;
-
-  useEffect(() => {
-    const updateScale = () => {
-      if (containerRef.current) {
-        const availableWidth = containerRef.current.clientWidth - 16;
-        if (availableWidth < BASE_WIDTH) {
-          setScale(availableWidth / BASE_WIDTH);
-        } else {
-          setScale(1);
-        }
-      }
-    };
-
-    updateScale();
-    window.addEventListener('resize', updateScale);
-    return () => window.removeEventListener('resize', updateScale);
-  }, []);
-
-  return (
-    <div ref={containerRef} className="w-full flex justify-center overflow-hidden py-1">
-      <div
-        style={{
-          width: `${BASE_WIDTH * scale}px`,
-          height: `${BASE_HEIGHT * scale}px`,
-          position: 'relative',
-        }}
-        className="transition-all duration-150 ease-out mx-auto rounded-xl shadow-lg border border-slate-300"
-      >
-        <div
-          style={{
-            width: `${BASE_WIDTH}px`,
-            height: `${BASE_HEIGHT}px`,
-            transform: `scale(${scale})`,
-            transformOrigin: 'top left',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-          }}
-        >
-          <CertificateTemplate
-            innerRef={innerRef}
-            certificate={certificate}
-            verificationUrl={verificationUrl}
-          />
-        </div>
-      </div>
-    </div>
-  );
-}
 
 export function VerifyCertificate() {
   const { token } = useParams();
@@ -132,7 +75,7 @@ export function VerifyCertificate() {
 
   return (
     <div className="min-h-screen bg-slate-50 text-slate-800 font-sans selection:bg-brand-500 selection:text-white flex flex-col justify-between p-3 sm:p-6 md:p-10">
-      {/* Top Impressive Branding Header with favicon.png */}
+      {/* Header with favicon.png */}
       <header className="max-w-4xl w-full mx-auto flex items-center justify-between py-3 sm:py-4 border-b border-slate-200/90">
         <div className="flex items-center gap-3">
           <div className="w-11 h-11 rounded-2xl bg-white border border-slate-200 p-1.5 shadow-md shadow-slate-200/60 flex items-center justify-center shrink-0">
@@ -147,7 +90,14 @@ export function VerifyCertificate() {
             </span>
           </div>
         </div>
-        
+
+        <Link
+          to="/login"
+          className="text-xs font-bold text-slate-600 hover:text-brand-600 px-3.5 py-2 rounded-xl border border-slate-200 hover:border-brand-200 bg-white transition-all shadow-xs flex items-center gap-1.5 shrink-0"
+        >
+          <Lock className="w-3.5 h-3.5 text-slate-400" />
+          <span>Login</span>
+        </Link>
       </header>
 
       {/* Main Verification Container */}
@@ -278,7 +228,7 @@ export function VerifyCertificate() {
               <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
                 <button
                   onClick={() => setShowFullCertificate(!showFullCertificate)}
-                  className="w-full sm:w-auto text-xs font-bold text-[#2C91E3] hover:text-brand-700 bg-blue-50 hover:bg-blue-100 px-4 py-3 rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-2"
+                  className="w-full sm:w-auto text-xs font-bold text-[#2C91E3] hover:text-brand-700 bg-blue-50 hover:bg-blue-100 px-4 py-3 rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   {showFullCertificate ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
                   {showFullCertificate ? 'Hide Full Certificate Document' : 'View Full Certificate Document'}
@@ -287,22 +237,24 @@ export function VerifyCertificate() {
                 <button
                   onClick={handleDownloadPdf}
                   disabled={isGeneratingPdf}
-                  className="w-full sm:w-auto text-xs font-bold text-white bg-[#0A2540] hover:bg-brand-600 px-5 py-3 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50"
+                  className="w-full sm:w-auto text-xs font-bold text-white bg-[#0A2540] hover:bg-brand-600 px-5 py-3 rounded-xl shadow-md shadow-blue-900/20 transition-all flex items-center justify-center gap-2 disabled:opacity-50 whitespace-nowrap"
                 >
                   <Download className="w-4 h-4" />
                   {isGeneratingPdf ? 'Generating PDF...' : 'Download Official PDF'}
                 </button>
               </div>
 
-              {/* Full Certificate Visual Rendering with Responsive Scaled Wrapper */}
+              {/* Full Crisp Desktop-Quality Certificate Document */}
               {showFullCertificate && (
                 <div className="pt-3 border-t border-slate-100 animate-in fade-in pb-6">
-                  <div className="bg-slate-100/90 p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-inner overflow-hidden">
-                    <ResponsiveCertificateViewer
-                      innerRef={certRef}
-                      certificate={certificate}
-                      verificationUrl={window.location.href}
-                    />
+                  <div className="overflow-x-auto p-1 sm:p-2">
+                    <div className="min-w-[700px] md:min-w-0 mx-auto">
+                      <CertificateTemplate
+                        innerRef={certRef}
+                        certificate={certificate}
+                        verificationUrl={window.location.href}
+                      />
+                    </div>
                   </div>
                 </div>
               )}
