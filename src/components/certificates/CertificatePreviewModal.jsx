@@ -63,10 +63,6 @@ export function CertificatePreviewModal({ isOpen, onClose, certificate, intern }
               <span>Verify Route</span>
             </a>
 
-            <Button variant="secondary" icon={Printer} onClick={handlePrint} className="flex-1 sm:flex-initial">
-              Print
-            </Button>
-
             <Button
               variant="primary"
               icon={Download}
