@@ -15,14 +15,17 @@ import {
   CheckCircle2,
   Lock,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Maximize2,
+  ZoomIn
 } from 'lucide-react';
 import { CertificateTemplate } from '../components/certificates/CertificateTemplate';
+import { CertificateZoomModal } from '../components/certificates/CertificateZoomModal';
 import html2canvas from 'html2canvas';
 import jsPDF from 'jspdf';
 
-// Responsive Scaled Certificate Container for Mobile & Desktop
-function ResponsiveCertificateViewer({ certificate, verificationUrl, innerRef }) {
+// Responsive Scaled Certificate Container with Interactive Zoom Trigger
+function ResponsiveCertificateViewer({ certificate, verificationUrl, innerRef, onOpenZoom }) {
   const containerRef = useRef(null);
   const [scale, setScale] = useState(1);
   const BASE_WIDTH = 850;
@@ -31,7 +34,7 @@ function ResponsiveCertificateViewer({ certificate, verificationUrl, innerRef })
   useEffect(() => {
     const updateScale = () => {
       if (containerRef.current) {
-        const availableWidth = containerRef.current.clientWidth - 16;
+        const availableWidth = containerRef.current.clientWidth - 8;
         if (availableWidth < BASE_WIDTH) {
           setScale(availableWidth / BASE_WIDTH);
         } else {
@@ -46,14 +49,24 @@ function ResponsiveCertificateViewer({ certificate, verificationUrl, innerRef })
   }, []);
 
   return (
-    <div ref={containerRef} className="w-full flex justify-center overflow-hidden py-1">
+    <div 
+      ref={containerRef} 
+      onClick={onOpenZoom}
+      className="w-full flex flex-col items-center justify-center overflow-hidden py-1 group cursor-pointer relative"
+    >
+      {/* Click to Zoom Hover Badge */}
+      <div className="absolute top-3 right-3 z-20 bg-slate-900/80 hover:bg-slate-900 text-white px-3 py-1.5 rounded-xl text-xs font-bold shadow-lg backdrop-blur-md flex items-center gap-1.5 transition-all group-hover:scale-105">
+        <ZoomIn className="w-3.5 h-3.5 text-brand-400" />
+        <span>Click to Zoom & Full Screen</span>
+      </div>
+
       <div
         style={{
           width: `${BASE_WIDTH * scale}px`,
           height: `${BASE_HEIGHT * scale}px`,
           position: 'relative',
         }}
-        className="transition-all duration-150 ease-out mx-auto rounded-xl shadow-lg border border-slate-300"
+        className="transition-all duration-150 ease-out mx-auto rounded-2xl shadow-xl border border-slate-300 overflow-hidden group-hover:shadow-2xl group-hover:border-brand-300"
       >
         <div
           style={{
@@ -83,6 +96,7 @@ export function VerifyCertificate() {
   const [loading, setLoading] = useState(true);
   const [showFullCertificate, setShowFullCertificate] = useState(true);
   const [isGeneratingPdf, setIsGeneratingPdf] = useState(false);
+  const [isZoomModalOpen, setIsZoomModalOpen] = useState(false);
   const certRef = useRef(null);
 
   useEffect(() => {
@@ -283,13 +297,26 @@ export function VerifyCertificate() {
 
               {/* Actions & Toggle View */}
               <div className="pt-1 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-                <button
-                  onClick={() => setShowFullCertificate(!showFullCertificate)}
-                  className="w-full sm:w-auto text-xs font-bold text-[#2C91E3] hover:text-brand-700 bg-blue-50 hover:bg-blue-100 px-4 py-3 rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-2"
-                >
-                  {showFullCertificate ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                  {showFullCertificate ? 'Hide Full Certificate Document' : 'View Full Certificate Document'}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={() => setShowFullCertificate(!showFullCertificate)}
+                    className="w-full sm:w-auto text-xs font-bold text-[#2C91E3] hover:text-brand-700 bg-blue-50 hover:bg-blue-100 px-4 py-3 rounded-xl border border-blue-200 transition-colors flex items-center justify-center gap-2"
+                  >
+                    {showFullCertificate ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                    {showFullCertificate ? 'Hide Full Certificate Document' : 'View Full Certificate Document'}
+                  </button>
+
+                  {showFullCertificate && (
+                    <button
+                      onClick={() => setIsZoomModalOpen(true)}
+                      className="text-xs font-bold text-slate-700 hover:text-slate-900 bg-slate-100 hover:bg-slate-200 px-3.5 py-3 rounded-xl border border-slate-200 transition-colors flex items-center gap-1.5"
+                      title="Open Full Screen Zoom View"
+                    >
+                      <Maximize2 className="w-4 h-4 text-brand-600" />
+                      <span className="hidden md:inline">Zoom Preview</span>
+                    </button>
+                  )}
+                </div>
 
                 <button
                   onClick={handleDownloadPdf}
@@ -301,14 +328,15 @@ export function VerifyCertificate() {
                 </button>
               </div>
 
-              {/* Full Certificate Visual Rendering with Responsive Scaled Wrapper */}
+              {/* Full Certificate Visual Rendering with Interactive Scaled Wrapper */}
               {showFullCertificate && (
                 <div className="pt-3 border-t border-slate-100 animate-in fade-in pb-6">
-                  <div className="bg-slate-100/90 p-2 sm:p-4 rounded-2xl border border-slate-200 shadow-inner overflow-hidden">
+                  <div className="bg-slate-100/80 p-2 rounded-2xl border border-slate-200/90 shadow-inner overflow-hidden">
                     <ResponsiveCertificateViewer
                       innerRef={certRef}
                       certificate={certificate}
                       verificationUrl={window.location.href}
+                      onOpenZoom={() => setIsZoomModalOpen(true)}
                     />
                   </div>
                 </div>
@@ -317,6 +345,15 @@ export function VerifyCertificate() {
           </div>
         )}
       </main>
+
+      {/* Interactive Full Screen Zoom Lightbox Popup */}
+      <CertificateZoomModal
+        isOpen={isZoomModalOpen}
+        onClose={() => setIsZoomModalOpen(false)}
+        certificate={certificate}
+        verificationUrl={window.location.href}
+        onDownloadPdf={handleDownloadPdf}
+      />
 
       {/* Footer */}
       <footer className="max-w-4xl w-full mx-auto text-center py-4 border-t border-slate-200 text-xs text-slate-400">
