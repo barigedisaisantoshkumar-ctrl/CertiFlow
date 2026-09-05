@@ -73,7 +73,7 @@ export function Login() {
             <Input
               label="Company Email"
               type="email"
-              placeholder="Enter company email (e.g. director@thehps.in)"
+              placeholder="Enter company email"
               icon={Mail}
               value={email}
               onChange={(e) => setEmail(e.target.value)}
@@ -107,7 +107,6 @@ export function Login() {
               <ShieldCheck className="w-4 h-4 text-emerald-500" />
               Row Level Security Active
             </span>
-            <span>v1.0 MVP</span>
           </div>
         </div>
 

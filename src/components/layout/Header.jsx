@@ -20,15 +20,16 @@ export function Header({ title }) {
       </div>
 
       <div className="flex items-center gap-3">
-        {/* Quick Public Verification Link */}
-        <Link
-          to="/verify/token-sai-kumar-2026-v1"
+        {/* Quick External HPS Website Link */}
+        <a
+          href="https://thehps.in/"
           target="_blank"
+          rel="noreferrer"
           className="hidden md:flex items-center gap-1.5 px-3 py-1.5 text-xs font-semibold text-brand-600 bg-brand-50 border border-brand-200/60 rounded-lg hover:bg-brand-100 transition-colors"
         >
           <ExternalLink className="w-3.5 h-3.5" />
-          Test Public Verification Page
-        </Link>
+          Visit HPS Website
+        </a>
       </div>
     </header>
   );
