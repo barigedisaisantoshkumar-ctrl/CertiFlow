@@ -72,9 +72,9 @@ ALTER TABLE certificates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE templates ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Interns Policies: Authenticated company users only
-CREATE POLICY "Authenticated users can select interns"
-    ON interns FOR SELECT TO authenticated USING (true);
+-- Interns Policies: Public read for certificate verification joins, authenticated access for management
+CREATE POLICY "Anyone can view interns for verification"
+    ON interns FOR SELECT TO anon, authenticated USING (true);
 
 CREATE POLICY "Authenticated users can insert/update interns"
     ON interns FOR ALL TO authenticated USING (true);

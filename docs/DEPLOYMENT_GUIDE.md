@@ -45,8 +45,17 @@ VITE_SUPABASE_ANON_KEY=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
 
 ## 🌐 Vercel Deployment Configuration
 
-The repository contains `vercel.json` configured for SPA routing rewrites:
+1. **Vercel Project Setup**:
+   - Link your GitHub repository to Vercel.
+   - Build Command: `npm run build`
+   - Output Directory: `dist`
 
+2. **Environment Variables in Vercel**:
+   Go to **Project Settings -> Environment Variables** in Vercel and add:
+   - `VITE_SUPABASE_URL`: `https://rewzxbwurojdaavtwcbz.supabase.co`
+   - `VITE_SUPABASE_ANON_KEY`: `sb_publishable_oCz383K8VLAQK6P7qU1IXw_ic65QGnv` (or your active anon key)
+
+3. **SPA Routing Config (`vercel.json`)**:
 ```json
 {
   "rewrites": [
@@ -55,17 +64,23 @@ The repository contains `vercel.json` configured for SPA routing rewrites:
 }
 ```
 
-### Deploying via Vercel CLI:
-```bash
-npx vercel --prod
-```
-
 ---
 
-## 🛢️ Supabase Database Migration Setup
+## 🛢️ Supabase Database Migration Setup (Mandatory)
 
-1. Log into your Supabase Dashboard.
-2. Navigate to **SQL Editor**.
-3. Execute the SQL script contained in `supabase/migrations/20260902_init_schema.sql`.
-4. Verify table creation (`interns`, `certificates`, `templates`, `audit_logs`).
-5. Ensure Storage Bucket `certificates` is created with public read access for verified PDF downloads.
+> [!IMPORTANT]
+> If database tables do not exist in your Supabase project, data will be stored **only in local browser storage**, causing external QR code verification scans to show "Certificate Not Found".
+
+Follow these steps to initialize your cloud database:
+
+1. Log into your [Supabase Dashboard](https://supabase.com/dashboard).
+2. Open your project (`rewzxbwurojdaavtwcbz`).
+3. Click on **SQL Editor** from the left navigation sidebar.
+4. Click **New Query**.
+5. Copy and paste the entire contents of [20260902_init_schema.sql](file:///c:/HPS/CertiFlow/supabase/migrations/20260902_init_schema.sql).
+6. Click **Run** (or press Ctrl+Enter).
+7. Verify under **Table Editor** that tables `interns`, `certificates`, `templates`, and `audit_logs` exist.
+8. Verify under **Authentication -> Policies** that:
+   - `certificates` has policy: `Anyone can view valid/revoked certificate for verification` (`SELECT TO anon, authenticated`).
+   - `interns` has policy: `Anyone can view interns for verification` (`SELECT TO anon, authenticated`).
+
