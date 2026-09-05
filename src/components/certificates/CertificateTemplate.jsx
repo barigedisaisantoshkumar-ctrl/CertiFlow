@@ -1,6 +1,12 @@
 import React from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { formatDate, getPronoun, calculateDuration } from '../../utils/helpers';
+import { 
+  HPS_LOGO, 
+  DIRECTOR_SIGNATURE, 
+  TOP_CORNER_SHAPE, 
+  BOTTOM_CORNER_SHAPE 
+} from '../../utils/certificateAssets';
 
 export function CertificateTemplate({ certificate, intern, verificationUrl, innerRef }) {
   const name = (certificate?.intern_name || intern?.full_name || 'DIPIKA REDDY RAGIPINDI').toUpperCase();
@@ -33,14 +39,14 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
     >
       {/* 1. Top-Left Corner Shape */}
       <img
-        src="/hps-template/hps_top-removebg-preview.png"
+        src={TOP_CORNER_SHAPE}
         alt=""
         className="absolute top-0 left-0 w-[21%] h-auto pointer-events-none z-0"
       />
 
       {/* 2. Bottom-Right Corner Shape */}
       <img
-        src="/hps-template/hps_bottom-removebg-preview.png"
+        src={BOTTOM_CORNER_SHAPE}
         alt=""
         className="absolute bottom-0 right-[-1px] w-[22%] h-auto pointer-events-none z-0"
       />
@@ -48,7 +54,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
       {/* 3. Top Header with HPS Logo */}
       <div className="flex flex-col items-center justify-center relative z-10 pt-1">
         <img
-          src="/hps-template/hps_logo.png"
+          src={HPS_LOGO}
           alt="HPS HARSHA PERFECT SOLUTIONS Logo"
           className="h-24 w-auto object-contain mx-auto"
         />
@@ -154,7 +160,7 @@ export function CertificateTemplate({ certificate, intern, verificationUrl, inne
         {/* Right Column: Director Signature */}
         <div className="col-span-4 flex flex-col items-center justify-end text-center pr-14 relative z-10">
           <img
-            src="/hps-template/signature.png"
+            src={DIRECTOR_SIGNATURE}
             alt="Director Signature"
             className="h-16 w-auto mx-auto object-contain mb-1"
           />
