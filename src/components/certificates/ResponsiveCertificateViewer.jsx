@@ -3,11 +3,11 @@ import React, { useRef, useState, useEffect } from 'react';
 /**
  * ResponsiveCertificateViewer
  * 
- * Scales fixed-dimension certificate layout (850px x 601px A4 Landscape)
+ * Scales fixed-dimension certificate layout (950px x 672px A4 Landscape)
  * smoothly down to match any screen/container width, acting like a responsive image.
  * Guarantees zero horizontal scroll, zero vertical clipping, and 100% visibility of all certificate elements on mobile devices.
  */
-export function ResponsiveCertificateViewer({ children, baseWidth = 850, baseHeight = 601, className = '' }) {
+export function ResponsiveCertificateViewer({ children, baseWidth = 950, baseHeight = 672, className = '' }) {
   const containerRef = useRef(null);
   const [scale, setScale] = useState(1);
 
@@ -16,7 +16,6 @@ export function ResponsiveCertificateViewer({ children, baseWidth = 850, baseHei
       if (!containerRef.current) return;
       const availableWidth = containerRef.current.clientWidth;
       if (availableWidth > 0) {
-        // Compute proportional scale factor (capped at 1 to prevent over-stretching)
         const newScale = Math.min(availableWidth / baseWidth, 1);
         setScale(newScale);
       }
@@ -47,7 +46,7 @@ export function ResponsiveCertificateViewer({ children, baseWidth = 850, baseHei
           overflow: 'hidden',
           transition: 'width 0.1s ease-out, height 0.1s ease-out',
         }}
-        className="rounded-xl shadow-xl border border-slate-200/90 bg-white shrink-0"
+        className="rounded-xl shadow-2xl border border-slate-200/90 bg-white shrink-0"
       >
         <div
           style={{

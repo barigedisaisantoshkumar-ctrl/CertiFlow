@@ -4,10 +4,9 @@ import jsPDF from 'jspdf';
 /**
  * downloadCertificatePdf
  * 
- * Captures the exact rendered CertificateTemplate DOM element directly, 
- * using html2canvas `onclone` callback to reset parent scale transforms.
- * This guarantees all pre-loaded images (logo, signatures, corner shapes) 
- * and exact original layout typography remain 100% identical in the PDF.
+ * Captures the exact rendered CertificateTemplate DOM element directly,
+ * using html2canvas `onclone` callback to reset parent scale transforms
+ * and outputs a standard A4 Landscape PDF (297mm x 210mm).
  */
 export async function downloadCertificatePdf(sourceElement, fileName = 'HPS_Verified_Certificate.pdf') {
   if (!sourceElement) return;
@@ -18,10 +17,8 @@ export async function downloadCertificatePdf(sourceElement, fileName = 'HPS_Veri
     logging: false,
     backgroundColor: '#FFFFFF',
     onclone: (clonedDoc) => {
-      // Find the print container in the cloned document
       const certNode = clonedDoc.getElementById('certificate-print-container');
       if (certNode) {
-        // Strip scale transforms from parent containers in clone so html2canvas measures standard unscaled desktop bounds
         let parent = certNode.parentElement;
         while (parent && parent !== clonedDoc.body) {
           parent.style.transform = 'none';
@@ -31,21 +28,24 @@ export async function downloadCertificatePdf(sourceElement, fileName = 'HPS_Veri
           parent = parent.parentElement;
         }
 
-        // Force desktop width dimensions on the certificate node in cloned document
-        certNode.style.width = '850px';
-        certNode.style.height = '601px';
+        // Set to exact 950px x 672px (1.414 A4 Landscape Proportions)
+        certNode.style.width = '950px';
+        certNode.style.height = '672px';
         certNode.style.transform = 'none';
       }
     },
   });
 
   const imgData = canvas.toDataURL('image/png');
+
+  // Standard Official A4 Landscape PDF document (297mm x 210mm)
   const pdf = new jsPDF({
     orientation: 'landscape',
-    unit: 'px',
-    format: [canvas.width, canvas.height],
+    unit: 'mm',
+    format: 'a4',
   });
 
-  pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+  // Fit image to full 297mm x 210mm A4 Landscape page
+  pdf.addImage(imgData, 'PNG', 0, 0, 297, 210);
   pdf.save(fileName);
 }

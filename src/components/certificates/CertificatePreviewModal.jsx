@@ -34,7 +34,7 @@ export function CertificatePreviewModal({ isOpen, onClose, certificate, intern }
     <Modal isOpen={isOpen} onClose={onClose} title="Certificate Preview & Verification" maxWidth="max-w-4xl">
       <div className="space-y-5">
         {/* Crisp High-Res Responsive Certificate Container */}
-        <ResponsiveCertificateViewer baseWidth={850} baseHeight={601}>
+        <ResponsiveCertificateViewer baseWidth={950} baseHeight={672}>
           <CertificateTemplate
             innerRef={certRef}
             certificate={certificate}

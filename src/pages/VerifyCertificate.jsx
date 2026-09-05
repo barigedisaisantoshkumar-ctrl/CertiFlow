@@ -226,7 +226,7 @@ export function VerifyCertificate() {
               {/* Full Crisp Responsive Certificate Document */}
               {showFullCertificate && (
                 <div className="pt-3 border-t border-slate-100 animate-in fade-in pb-6">
-                  <ResponsiveCertificateViewer baseWidth={850} baseHeight={601}>
+                  <ResponsiveCertificateViewer baseWidth={950} baseHeight={672}>
                     <CertificateTemplate
                       innerRef={certRef}
                       certificate={certificate}
